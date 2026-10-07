@@ -176,7 +176,7 @@ export default function Achievements() {
         <div className="wrap ach-head">
           <div>
             <p className="tag rv">
-              <b>06</b> — Achievements
+              <b>07</b> — Achievements
             </p>
             <h2 className="h2 rv-mask" id="ach-title" style={{ marginTop: 18 }}>
               <span>

@@ -60,6 +60,24 @@ const css = `
 .mui-page{background:#fff;box-shadow:inset 0 0 0 1px var(--line);padding:16px 14px;display:flex;flex-direction:column;gap:8px}
 .mui-page:first-child{border-radius:12px 2px 2px 12px;transform:rotateY(8deg);transform-origin:right}
 .mui-page:last-child{border-radius:2px 12px 12px 2px;transform:rotateY(-8deg);transform-origin:left}
+.mui-att{display:grid;grid-template-columns:70px repeat(7,minmax(0,1fr));gap:4px;font-family:var(--font-mono);font-size:9px;color:var(--mute)}
+.mui-att i{height:18px;border-radius:4px;background:#fff;box-shadow:inset 0 0 0 1px var(--line);animation:cellin .5s var(--ease) both;animation-delay:calc(var(--k)*28ms + .3s)}
+.mui-att i.on{background:var(--ink);box-shadow:none}
+.mui-att i.half{background:#bdbab4;box-shadow:none}
+@keyframes cellin{from{opacity:0;transform:scale(.6)}}
+.mui-stack{display:flex;height:16px;border-radius:5px;overflow:hidden;flex:1}
+.mui-stack span{height:100%;transform-origin:left;animation:growx 1.1s var(--ease) both;animation-delay:calc(var(--k)*120ms + .6s)}
+@keyframes growx{from{transform:scaleX(0)}}
+.mui-erp{position:relative;flex:1;display:grid;place-items:center;min-height:200px}
+.mui-erp svg{position:absolute;inset:0;width:100%;height:100%}
+.mui-erp svg path{fill:none;stroke:var(--faint);stroke-width:1.2;stroke-dasharray:4 5;animation:dash 1.6s linear infinite}
+.mui-erp .hub{position:relative;z-index:1;width:74px;height:74px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:700;letter-spacing:-.03em;font-size:15px;box-shadow:0 0 0 10px rgba(13,13,13,.06)}
+.mui-erp .mod{position:absolute;z-index:1;padding:6px 10px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 1px var(--line),0 6px 14px -10px rgba(13,13,13,.5);font-size:10.5px;font-weight:600;color:var(--ink)}
+.mui-erp .co{position:absolute;z-index:1;bottom:10px;padding:5px 9px;border-radius:8px;background:var(--soft);font-family:var(--font-mono);font-size:9px;color:var(--ink-2)}
+.mui-pages{position:relative;flex:1;min-height:200px}
+.mui-pages .pg{position:absolute;width:44%;height:72%;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 1px var(--line),0 10px 20px -14px rgba(13,13,13,.45);padding:10px;display:flex;flex-direction:column;gap:6px;animation:pgin .8s var(--ease) both}
+.mui-pages .pg b{font-family:var(--font-mono);font-weight:500;font-size:9px;text-transform:uppercase;color:var(--mute)}
+@keyframes pgin{from{opacity:0;transform:translateY(16px) rotate(-3deg)}}
 .mui-page h5{font-family:var(--font-serif);font-style:italic;font-weight:400;font-size:18px;line-height:1.05;color:var(--ink)}
 }
 `;
@@ -72,6 +90,18 @@ function Bar({ title }: { title: string }) {
       <i />
       <span>{title}</span>
     </div>
+  );
+}
+
+function Row({ r }: { r: number }) {
+  const pattern = ["on", "on", "on", "on", "on", "half", ""];
+  return (
+    <>
+      <span>Worker {r + 1}</span>
+      {pattern.map((c, i) => (
+        <i key={i} className={(r + i) % 6 === 5 ? "half" : c} style={{ ["--k" as string]: r * 7 + i }} />
+      ))}
+    </>
   );
 }
 
@@ -236,6 +266,87 @@ export function MiniUI({ kind, title }: { kind: Project["ui"]; title: string }) 
                   <span className={`mui-tick ${i % 3 === 2 ? "o" : ""}`} />
                   {sk("100%")}
                   {sk("40px", "d")}
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      );
+      break;
+    case "payroll":
+      body = (
+        <>
+          <Bar title="Weekly attendance" />
+          <div className="mui-body">
+            <div className="mui-att">
+              <span />
+              {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+                <span key={i} style={{ textAlign: "center" }}>
+                  {d}
+                </span>
+              ))}
+              {[0, 1, 2, 3, 4].map((r) => (
+                <Row key={r} r={r} />
+              ))}
+            </div>
+            <p className="mui-label" style={{ marginTop: 6 }}>
+              Labour cost → projects
+            </p>
+            {["Week A", "Week B", "Week C"].map((w, i) => (
+              <div className="mui-row" key={w}>
+                <span className="mui-label" style={{ width: 56 }}>
+                  {w}
+                </span>
+                <span className="mui-stack">
+                  {[[45, "#0d0d0d"], [30, "#8f8c86"], [25, "#cfccc6"]].map(([pc, c], k) => (
+                    <span key={k} style={{ width: `${(pc as number) - i * 3 + k * 3}%`, background: c as string, ["--k" as string]: k + i }} />
+                  ))}
+                </span>
+              </div>
+            ))}
+          </div>
+        </>
+      );
+      break;
+    case "erp":
+      body = (
+        <>
+          <Bar title="ERP modules" />
+          <div className="mui-body">
+            <div className="mui-erp">
+              <svg viewBox="0 0 300 220" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M150 110 L60 40 M150 110 L240 40 M150 110 L50 120 M150 110 L250 120 M150 110 L60 200 M150 110 L150 200 M150 110 L240 200" />
+              </svg>
+              <span className="hub">ERP</span>
+              <span className="mod" style={{ left: "6%", top: "10%" }}>Accounting</span>
+              <span className="mod" style={{ right: "6%", top: "10%" }}>Finance</span>
+              <span className="mod" style={{ left: "2%", top: "46%" }}>Invoicing</span>
+              <span className="mod" style={{ right: "4%", top: "46%" }}>HRD</span>
+              <span className="co" style={{ left: "10%" }}>Company 1</span>
+              <span className="co" style={{ left: "50%", transform: "translateX(-50%)" }}>Company 2</span>
+              <span className="co" style={{ right: "10%" }}>Company 3</span>
+            </div>
+          </div>
+        </>
+      );
+      break;
+    case "amazon":
+      body = (
+        <>
+          <Bar title="Marketplace → statements" />
+          <div className="mui-body">
+            <div className="mui-pages">
+              {["Report data", "Financial position", "Profit or loss", "Notes"].map((t, i) => (
+                <div
+                  key={t}
+                  className="pg"
+                  style={{ left: `${4 + i * 17}%`, top: `${4 + i * 7}%`, animationDelay: `${0.3 + i * 0.18}s`, zIndex: i }}
+                >
+                  <b>{t}</b>
+                  {sk("90%", i === 0 ? "d" : "")}
+                  {sk("70%")}
+                  {sk("80%")}
+                  {sk("55%", i === 3 ? "k" : "")}
                 </div>
               ))}
             </div>

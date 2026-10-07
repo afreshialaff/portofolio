@@ -41,7 +41,7 @@ export default function Certifications() {
       </style>
       <div className="wrap certs-grid">
         <div className="certs-left">
-          <SectionHead index="04" label="Certifications" title="Always" accent="learning." id="certs-title" />
+          <SectionHead index="05" label="Certifications" title="Always" accent="learning." id="certs-title" />
           <p className="certs-count rv" style={{ ["--i" as string]: 2 }}>
             <b>{String(certs).padStart(2, "0")}</b> professional certifications
             <br />

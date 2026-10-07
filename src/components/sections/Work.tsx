@@ -12,7 +12,7 @@ const css = `
 @layer components {
 .work-intro{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
 .work-intro p{max-width:40ch;color:var(--mute);font-size:15px}
-.acc{--spine:74px;display:flex;gap:10px;height:min(78svh,600px);margin-top:48px;container-type:inline-size;container-name:acc}
+.acc{--spine:66px;display:flex;gap:10px;height:min(78svh,600px);margin-top:48px;container-type:inline-size;container-name:acc}
 .acc-panel{position:relative;flex:1 1 0;min-width:0;max-width:var(--spine);border-radius:26px;background:var(--card);box-shadow:var(--hair);overflow:hidden;
   transition:flex-grow .9s var(--ease),max-width .9s var(--ease),box-shadow .6s var(--ease)}
 .acc-panel.is-open{flex-grow:8;max-width:100%;box-shadow:var(--hair),var(--shadow-deep)}
@@ -28,7 +28,7 @@ const css = `
 .acc-panel.is-open .acc-trigger{pointer-events:none}
 
 .acc-body{position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:28px;padding:30px;
-  min-width:calc(100cqw - 6 * (var(--spine) + 10px));opacity:0;visibility:hidden;transition:opacity .4s var(--ease),visibility 0s linear .4s}
+  min-width:calc(100cqw - (var(--n) - 1) * (var(--spine) + 10px));opacity:0;visibility:hidden;transition:opacity .4s var(--ease),visibility 0s linear .4s}
 .acc-panel.is-open .acc-body{opacity:1;visibility:visible;transition:opacity .7s var(--ease) .25s,visibility 0s}
 .acc-text{display:flex;flex-direction:column;min-width:0;overflow:auto;scrollbar-width:none}
 .acc-kick{display:flex;align-items:center;gap:12px;font-family:var(--font-mono);font-size:12px;color:var(--mute);text-transform:uppercase}
@@ -73,12 +73,12 @@ export default function Work() {
         <div className="work-intro">
           <SectionHead index="03" label="Selected work" title="What I do," accent="daily." id="work-title" />
           <p className="rv">
-            Seven areas of practice, each drawn from the résumé. The sketches on the right are illustrative, not client
-            data.
+            Eight areas of practice, from the résumé and portfolio notes. The sketches on the right are illustrative, not
+            client data.
           </p>
         </div>
 
-        <div className="acc rv" style={{ ["--i" as string]: 1 }}>
+        <div className="acc rv" style={{ ["--i" as string]: 1, ["--n" as string]: PROJECTS.length }}>
           {PROJECTS.map((p, i) => {
             const isOpen = open === i;
             return (

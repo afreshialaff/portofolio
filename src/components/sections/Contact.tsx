@@ -98,7 +98,7 @@ export default function Contact() {
       </style>
       <div className="wrap">
         <p className="tag rv">
-          <b>07</b> — Contact
+          <b>08</b> — Contact
         </p>
         <h2 className="ct-title" id="contact-title" aria-label="Let's build something together.">
           <HopLine text="Let’s build" />

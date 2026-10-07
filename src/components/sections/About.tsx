@@ -96,7 +96,6 @@ const css = `
 .facts a:hover{border-color:var(--ink)}
 .quote{margin:0;font-family:var(--font-serif);font-style:italic;font-size:clamp(26px,2.3vw,36px);line-height:1.12;letter-spacing:-.01em}
 .quote::before{content:"“";display:block;font-size:2.2em;line-height:.6;color:var(--faint)}
-.quote figcaption{margin-top:14px;font-family:var(--font-mono);font-style:normal;font-size:11px;text-transform:uppercase;color:var(--mute);letter-spacing:.02em}
 
 @media (max-width: 1080px){
   .about-grid{grid-template-columns:minmax(0,1fr) 320px}
@@ -186,7 +185,7 @@ export default function About() {
   }, []);
 
   const strapText = `${PROFILE.name} · ${PROFILE.role} · Chartered Accountant · `;
-  const [firstPara, secondPara] = [PROFILE.resumeSummary[0], PROFILE.resumeSummary[2].split(". ").slice(0, 2).join(". ") + "."];
+  const [firstPara, secondPara] = [PROFILE.resumeSummary[0], PROFILE.aboutPractice];
 
   return (
     <section id="about" className="section about" aria-labelledby="about-title" ref={zoneRef}>
@@ -364,6 +363,10 @@ export default function About() {
                 </dd>
               </div>
               <div>
+                <dt>Focus</dt>
+                <dd>{PROFILE.focus}</dd>
+              </div>
+              <div>
                 <dt>Email</dt>
                 <dd>
                   <a href={`mailto:${PROFILE.email}`}>{PROFILE.email}</a>
@@ -380,7 +383,6 @@ export default function About() {
           </div>
           <figure className="quote rv" style={{ ["--i" as string]: 2 }}>
             <blockquote style={{ margin: 0 }}>{PROFILE.quote}</blockquote>
-            <figcaption>Paraphrased from her résumé summary</figcaption>
           </figure>
         </div>
       </div>

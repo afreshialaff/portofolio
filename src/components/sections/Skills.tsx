@@ -61,10 +61,12 @@ const css = `
 
 const FAMILY_SHADE: Record<SkillFamily, number> = {
   Accounting: 1,
-  Tax: 0.82,
-  "Audit & Risk": 0.66,
-  Systems: 0.5,
-  "AI & Data": 0.38,
+  Finance: 0.9,
+  Tax: 0.8,
+  Payroll: 0.68,
+  "Audit & Risk": 0.58,
+  Systems: 0.46,
+  "AI & Data": 0.36,
   Advisory: 0.26,
   Languages: 0.16,
 };

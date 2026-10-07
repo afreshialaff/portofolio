@@ -106,7 +106,7 @@ export default function Experience() {
         {css}
       </style>
       <div className="wrap">
-        <SectionHead index="05" label="Experience" title="Education and work, one" accent="path." id="exp-title" />
+        <SectionHead index="06" label="Experience" title="Education and work, one" accent="path." id="exp-title" />
 
         <div className="tl" ref={tlRef}>
           <div className="tl-spine" aria-hidden="true">
