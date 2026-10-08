@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { NAV, PROFILE } from "@/lib/data";
 import { lockScroll, onAnchorClick } from "@/lib/scroll";
+import { BriefcaseButton, openBriefcase } from "@/components/briefcase/BriefcaseButton";
 
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
@@ -38,6 +39,10 @@ const css = `
   transition:color .45s var(--ease)}
 .nav-link:hover{color:var(--ink)}
 .nav-link[aria-current="true"]{color:#fff}
+.nav-bc{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:999px;font-size:14px;font-weight:500;background:var(--card);box-shadow:inset 0 0 0 1px var(--line),0 10px 24px -18px rgba(13,13,13,.4);transition:background-color .4s var(--ease),color .4s var(--ease)}
+.nav-bc:hover{background:var(--ink);color:#fff}
+.nav-right{display:flex;align-items:center;gap:8px}
+.menu-bc{align-self:flex-start;margin:8px 0 18px;height:44px;padding:0 18px;border-radius:999px;background:var(--ink);color:#fff;font-size:14px;font-weight:500}
 .nav-menu-btn{display:none;height:44px;padding:0 18px;border-radius:999px;background:var(--ink);color:#fff;font-size:14px;font-weight:500;align-items:center;gap:10px}
 .nav-menu-btn i{display:grid;gap:4px}
 .nav-menu-btn i::before,.nav-menu-btn i::after{content:"";display:block;width:14px;height:1.5px;background:currentColor}
@@ -57,12 +62,13 @@ const css = `
 .menu-foot{display:flex;flex-wrap:wrap;gap:8px 20px;padding-bottom:28px;font-size:14px;color:var(--mute)}
 .menu-foot a{all:unset;cursor:pointer;color:var(--ink);text-decoration:underline;text-underline-offset:4px}
 
-@media (max-width: 1100px){
+@media (max-width: 1200px){
   .nav-pill{display:none}
   .nav-menu-btn{display:inline-flex}
   .nav-inner{height:72px}
   .menu-top{height:72px}
 }
+@media (max-width: 700px){ .nav-bc{display:none} }
 @media (max-width: 420px){ .nav-name small{display:none} }
 }
 `;
@@ -187,6 +193,7 @@ export default function Navigation() {
             </span>
           </a>
 
+          <div className="nav-right">
           <nav className="nav-pill" aria-label="Primary">
             <span ref={indRef} className="nav-ind" aria-hidden="true" />
             <ul ref={listRef}>
@@ -205,6 +212,7 @@ export default function Navigation() {
             </ul>
           </nav>
 
+          <BriefcaseButton className="nav-bc" label="Briefcase" />
           <button
             ref={menuBtnRef}
             type="button"
@@ -215,6 +223,7 @@ export default function Navigation() {
           >
             Menu <i aria-hidden="true" />
           </button>
+          </div>
         </div>
       </header>
 
@@ -268,6 +277,16 @@ export default function Navigation() {
               </li>
             ))}
           </ol>
+          <button
+            type="button"
+            className="menu-bc"
+            onClick={() => {
+              closeMenu(false);
+              window.setTimeout(openBriefcase, 300);
+            }}
+          >
+            Open Portfolio Briefcase
+          </button>
           <div className="menu-foot">
             <a href={`mailto:${PROFILE.email}`}>{PROFILE.email}</a>
             <span>{PROFILE.location}</span>

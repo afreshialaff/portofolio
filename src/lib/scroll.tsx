@@ -83,3 +83,19 @@ export function onAnchorClick(e: React.MouseEvent<HTMLAnchorElement>): void {
     history.replaceState(null, "", window.location.pathname + window.location.search);
   }
 }
+
+/** Scroll to one case-study card. Cards are position:sticky, so measure their natural position. */
+export function scrollToCase(id: string): void {
+  const li = document.querySelector<HTMLElement>(`[data-case="${id}"]`);
+  if (!li) {
+    scrollToTarget("#cases");
+    return;
+  }
+  const prev = li.style.position;
+  li.style.position = "relative";
+  const y = li.getBoundingClientRect().top + window.scrollY;
+  li.style.position = prev;
+  const i = Number(li.dataset.index ?? 0);
+  const sticky = getComputedStyle(li).position === "sticky";
+  scrollToTarget(Math.max(0, y - (sticky ? 96 + i * 14 : 90)));
+}

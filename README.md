@@ -25,25 +25,68 @@ Requires Node 18.18+ (Node 20/22 recommended). Optional: set `NEXT_PUBLIC_SITE_U
 
 | # | Section | Component | Notes |
 |---|---|---|---|
-| — | Navigation | `src/components/Navigation.tsx` | Frosted pill + sliding indicator; full-screen menu ≤ 1100 px |
-| — | Hero | `src/components/hero/Hero.tsx` | Benefit headline, three focus areas, proof row (3 ERP implementations · FS + Notes), CTAs; looping intro video |
+| — | Navigation | `src/components/Navigation.tsx` | Frosted pill + sliding indicator, **Briefcase** quick access; full-screen menu ≤ 1200 px |
+| — | Hero | `src/components/hero/Hero.tsx` | "Accounting, Finance & Business Consulting"; multi-client / parallel work; selected challenging cases; CTAs |
 | 01 | About | `sections/About.tsx` | Lanyard ID card; quick facts with both concurrent roles |
 | 02 | Services | `sections/Services.tsx` | Seven services with scope + example deliverables; tax split into preparation / computation / review / submission |
-| 03 | Case studies | `sections/CaseStudies.tsx` | Two flagship cases (ERP, Amazon) + four engagements: industry, scope, role, challenge, contribution, deliverables, result; illustrative animations |
-| 04 | Skills | `sections/Skills.tsx` | 11 core competencies by default, "View all skills" for 44; software (daily use / familiar), training, languages kept separate |
-| 05 | Achievements | `sections/Achievements.tsx` | Business results first; values render final without JS, count-up only as enhancement |
-| 06 | Experience | `sections/Experience.tsx` | Latest first; concurrent roles labelled; early roles summarised; school years removed |
+| 03 | Case studies | `sections/CaseStudies.tsx` | Four selected challenging cases (custom ERP, Amazon, Singapore, construction) + four engagements; "Open Portfolio Briefcase" |
+| 04 | Skills | `sections/Skills.tsx` | 12 core competencies, "View all skills" for the rest; software (daily / familiar), training, languages kept separate |
+| 05 | Achievements | `sections/Achievements.tsx` | Business results first; values render final without JS |
+| 06 | Experience | `sections/Experience.tsx` | Latest first; concurrent roles labelled; early roles summarised |
 | 07 | Credentials | `sections/Credentials.tsx` | Qualifications (issuer · year), training, publications & teaching, awards |
-| 08 | Gallery | `sections/Gallery.tsx` | Hidden until `GALLERY` in `src/lib/data.ts` has items (see below) |
-| 08/09 | Contact + footer | `sections/Contact.tsx` | What to include in a first message; email, phone, LinkedIn, résumé |
+| 08 | Contact + footer | `sections/Contact.tsx` | What to include in a first message; email, phone, LinkedIn, résumé |
+| — | Portfolio Briefcase | `components/briefcase/*` | Public drawer (published items only) + owner area at `/briefcase/admin` |
 
-Section numbers come from `SECTION_ORDER` in `src/lib/data.ts`, so they stay correct when the gallery appears.
+## Portfolio Briefcase
 
-### Adding proof-of-work to the gallery
-1. Put the file in `public/gallery/` (image, PDF or MP4). For PDFs and videos also add a preview image.
-2. Add an item to `GALLERY` in `src/lib/data.ts` with one of the exact labels:
-   **Anonymised work sample**, **Demo using synthetic data** or **Illustrative process**.
-3. Optionally link it to a case with `caseId` (`erp`, `amazon`, `wp`, `recon`, `attendance`, `pph21`).
+A real document collection for work samples.
+
+**Visitors** open it from the nav ("Briefcase"), the hero or the Case studies section (or `/#briefcase`). They see only
+**published** items, with search, category filters, previews (images, PDFs, video), metadata cards for XLSX/CSV/DOCX
+(download instead of a fake preview), the evidence label and a link to the related case. With nothing published the
+drawer shows "Work samples will be added here."
+
+**The owner** signs in at **`/briefcase/admin`** (not linked publicly, `noindex`):
+- drag-and-drop zone and **Choose files** (multi-file), with name, type, size, preview, progress, success/failure and **Retry**
+- accepted: PNG, JPG, WebP, GIF, PDF, XLSX, CSV, DOCX, MP4, WebM, MOV — up to **50 MB** each
+- every upload starts as a **private draft**; edit title, category, contribution/role, result, evidence label, related case
+- **Publish** needs a title, category, contribution, label and a tick confirming the file is cleared for public view
+- reorder (↑/↓), replace file (a published item goes back to draft), unpublish, archive/restore, delete drafts
+
+### How it is built
+- `src/app/api/briefcase/*` — route handlers: `session` (login/logout), `items` (list/create), `items/[id]`
+  (edit/publish/archive/delete), `items/[id]/upload` (retry/replace), `file/[id]` (302 to a 10-minute signed URL).
+- Storage: a **private** Supabase Storage bucket; metadata in a Postgres table. Called over REST with the service-role key
+  from the server only — no extra npm packages. Files upload straight from the browser to a signed upload URL, so the
+  4.5 MB Vercel request limit does not apply.
+- Auth: one owner password + HMAC-signed, HttpOnly, SameSite=Strict cookie (8 h). Every write route checks the cookie
+  and same origin on the server. Drafts and archived files return 404 to anyone else.
+
+### Setup (one time)
+1. Create a Supabase project (free tier is fine).
+2. Supabase → SQL Editor → run **`supabase/briefcase.sql`** (creates the table, RLS, and the private `briefcase` bucket).
+3. Vercel → Project → Settings → Environment Variables (Production + Preview):
+   | Name | Value |
+   |---|---|
+   | `SUPABASE_URL` | Project URL, e.g. `https://xxxx.supabase.co` |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Settings → API → `service_role` key (keep secret) |
+   | `BRIEFCASE_OWNER_PASSWORD` | the password you will use at `/briefcase/admin` |
+   | `BRIEFCASE_SESSION_SECRET` | any random string of 32+ characters |
+4. Redeploy. Open `/briefcase/admin`, log in, upload.
+
+Until these are set, the site works normally, the public briefcase shows its empty state and the owner page explains
+what is missing.
+
+### Adding files sent to the agent
+Files dropped into a chat with an assistant are **not** on the website automatically. They are added through the same
+storage path as private drafts with `scripts/briefcase-add.mjs` (needs the two Supabase variables), then reviewed and
+published by the owner in `/briefcase/admin`:
+```bash
+SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… node scripts/briefcase-add.mjs ./recon.pdf \
+  --title "Bank reconciliation working paper" --category "Finance / reconciliation" \
+  --label "Anonymised work sample" --case recon
+```
+Uploading on the website does not send anything to an AI assistant.
 
 ### Styling notes
 - Design tokens are CSS variables in `src/app/globals.css` (`--paper #f4f2ee`, `--ink #0d0d0d`, `--ease cubic-bezier(.16,1,.3,1)`, …).

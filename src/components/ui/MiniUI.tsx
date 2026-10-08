@@ -322,9 +322,7 @@ export function MiniUI({ kind, title }: { kind: Service["ui"]; title: string }) 
               <span className="mod" style={{ right: "6%", top: "10%" }}>Finance</span>
               <span className="mod" style={{ left: "2%", top: "46%" }}>Invoicing</span>
               <span className="mod" style={{ right: "4%", top: "46%" }}>HRD</span>
-              <span className="co" style={{ left: "10%" }}>Company 1</span>
-              <span className="co" style={{ left: "50%", transform: "translateX(-50%)" }}>Company 2</span>
-              <span className="co" style={{ right: "10%" }}>Company 3</span>
+              <span className="co" style={{ left: "50%", transform: "translateX(-50%)" }}>Client business flow</span>
             </div>
           </div>
         </>

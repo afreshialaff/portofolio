@@ -7,14 +7,14 @@ import Skills from "@/components/sections/Skills";
 import Achievements from "@/components/sections/Achievements";
 import Experience from "@/components/sections/Experience";
 import Credentials from "@/components/sections/Credentials";
-import Gallery from "@/components/sections/Gallery";
+import BriefcaseDrawer from "@/components/briefcase/BriefcaseDrawer";
 import Contact, { Footer } from "@/components/sections/Contact";
 import { RevealObserver } from "@/components/ui/RevealObserver";
 import { SmoothScroll } from "@/lib/scroll";
 
 /**
  * Hero → About → Services → Case studies → Skills → Achievements → Experience → Credentials
- * → Gallery (only when it has items) → Contact.
+ * → Contact. The Portfolio Briefcase opens as a drawer from the nav, hero and cases.
  * One continuous page: no loader, no curtains, no page transitions.
  */
 export default function App() {
@@ -31,10 +31,10 @@ export default function App() {
         <Achievements />
         <Experience />
         <Credentials />
-        <Gallery />
         <Contact />
       </main>
       <Footer />
+      <BriefcaseDrawer />
       <RevealObserver />
     </>
   );

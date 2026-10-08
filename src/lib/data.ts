@@ -82,7 +82,7 @@ export type CaseStudy = {
   /** optional before / after, only from confirmed facts */
   beforeAfter?: { before: string; after: string };
   /** which animated finance visual to draw */
-  anim: "erp" | "statements" | "waterfall" | "recon" | "allocation" | "pph21";
+  anim: "erp" | "statements" | "jurisdiction" | "projects" | "waterfall" | "recon" | "allocation" | "pph21";
 };
 
 export type CredentialGroup = {
@@ -104,19 +104,6 @@ export type Achievement = {
   icon: string;
 };
 
-export type GalleryItem = {
-  id: string;
-  title: string;
-  category: string;
-  summary: string;
-  label: "Anonymised work sample" | "Demo using synthetic data" | "Illustrative process";
-  kind: "image" | "pdf" | "video";
-  /** path under /public, e.g. /gallery/erp-dashboard.webp */
-  src: string;
-  /** preview image for pdf / video */
-  preview?: string;
-  caseId?: string;
-};
 
 /* ------------------------------------------------------------------ profile */
 export const PROFILE = {
@@ -151,27 +138,30 @@ export const PROFILE = {
   school: "Universitas Negeri Malang",
   gpa: "3.9/4.0",
   hero: {
-    lines: ["Books that close.", "Systems that"],
-    accent: "fit.",
-    sub: "Chartered Accountant (IAI) for construction companies, Amazon sellers and Indonesian businesses — accounting, tax, payroll and ERP that hold up to review.",
-    focus: [
+    lines: ["Accounting, Finance"],
+    lead: "& Business",
+    accent: "Consulting.",
+    sub: "A Chartered Accountant working in consulting — handling many clients and several engagements in parallel, and adapting the approach to each business’s own process. Accounting, finance, tax and payroll for businesses across different industries.",
+    points: [
       {
-        title: "Construction Accounting & Project Finance",
-        text: "Project tagging, labour-cost allocation, invoices and project receipts.",
+        title: "Multi-client, in parallel",
+        text: "Several clients and engagements at once, each with its own systems, entities and deadlines.",
       },
       {
-        title: "Amazon Seller Accounting & Singapore Financial Reporting",
-        text: "Amazon reports to full statements and notes; most clients are Singapore-based.",
+        title: "Adapted to each business",
+        text: "Understanding how a company actually works before choosing the accounting, tax or system approach.",
       },
       {
-        title: "Custom ERP Implementation",
-        text: "Accounting, finance, invoicing and HRD modules, live at three construction companies.",
+        title: "Open to new jurisdictions",
+        text: "Indonesian and Singapore reporting today; currently learning Australian taxation.",
       },
     ],
-    also: "Also: Indonesian tax & Coretax support · payroll · monthly reporting",
-    proof: [
-      { value: "3", label: "ERP implementations running at construction clients" },
-      { value: "FS + Notes", label: "Complete financial statements for Amazon sellers" },
+    selectedLabel: "Selected challenging cases",
+    selected: [
+      { id: "erp", label: "Custom ERP" },
+      { id: "amazon", label: "Amazon seller accounting" },
+      { id: "singapore", label: "Singapore tax & reporting" },
+      { id: "construction", label: "Construction project finance" },
     ],
   },
   /** Résumé "Ringkasan" (summary), verbatim, split where the PDF merged paragraphs. */
@@ -185,15 +175,15 @@ export const PROFILE = {
     "I’m currently open to remote and international opportunities where I can contribute to a high-performing team, take on greater responsibility, and continue growing as a finance and accounting professional.",
   ],
   aboutPractice:
-    "My experience covers construction, engineering, trading and e-commerce. I prepare complete financial statements through to the notes for Amazon sellers — most of them Singapore-based — and I have implemented an ERP for three construction companies, with accounting, finance, invoicing and HRD modules tailored to each business.",
-  focus: "Accounting · Finance · Tax · Payroll · ERP",
+    "I work in consulting, handling many clients and several engagements in parallel and adapting my approach to each business. My work spans construction, engineering, trading and e-commerce — from complete financial statements through the notes for Amazon sellers, most of them Singapore-based, to a custom ERP built around construction clients’ business flows.",
+  focus: "Accounting · Finance · Business consulting",
   quote: "Better financial processes lead to better business decisions.",
   /** ID-card back — every line is a confirmed fact. */
   idCardFacts: [
     "Chartered Accountant (IAI)",
     "B. Accounting, Universitas Negeri Malang · GPA 3.9/4.0",
-    "ERP implemented for 3 construction companies",
-    "Amazon seller FS through to the notes",
+    "Consulting · many clients in parallel",
+    "Custom ERP · Amazon seller FS through the notes",
     "CoreTax · Accurate · Mekari Jurnal · MYOB · Zahir",
   ],
   languages: [
@@ -343,7 +333,7 @@ export const SERVICES: Service[] = [
     id: "erp",
     index: "07",
     title: "Custom ERP & Finance Workflow",
-    kicker: "3 construction companies",
+    kicker: "Construction clients",
     description:
       "An ERP developed around each company’s own business flow, plus standardised import templates and review steps for the finance team.",
     features: [
@@ -367,21 +357,21 @@ export const CASES: CaseStudy[] = [
   {
     id: "erp",
     flagship: true,
-    title: "A tailored ERP for three construction companies",
-    industry: "Construction · 3 client companies",
+    title: "A custom ERP built around each client’s business flow",
+    industry: "Construction clients",
     scope: "Accounting, finance, invoicing and HRD modules",
     role: "Business-process analysis, development and implementation",
-    challenge: "Each company runs a different business flow, so one standard setup would not fit all three.",
-    contribution: "Studied each company’s process, then adapted the system’s features and workflows to it.",
-    deliverables: "Three ERP implementations with accounting, finance, invoicing and HRD modules.",
+    challenge: "Each company runs its own business flow, so a standard setup would not fit how they actually work.",
+    contribution: "Studied each company’s process first, then adapted the system’s features and workflows to it.",
+    deliverables: "ERP implementations with accounting, finance, invoicing and HRD modules, configured per company.",
     result: "Core modules are complete, running smoothly and meet the requirements agreed with each client.",
     status: {
-      live: "Core accounting, finance, invoicing and HRD modules in daily use at three companies",
+      live: "Core accounting, finance, invoicing and HRD modules in daily use",
       next: "Optimisation and additional construction-specific requests",
     },
     beforeAfter: {
-      before: "Three companies, three different business flows",
-      after: "One ERP, configured to each company’s flow",
+      before: "Each company with its own business flow",
+      after: "An ERP configured to that company’s flow",
     },
     anim: "erp",
   },
@@ -397,8 +387,41 @@ export const CASES: CaseStudy[] = [
       "Processed Amazon reports into bookkeeping, prepared complete financial statements and updated the notes to the company’s situation.",
     deliverables: "Financial statements with notes to the financial statements.",
     result:
-      "Statements completed through the notes. Tax and reporting for each client’s jurisdiction is a separate step — for Singapore clients, reporting under the applicable framework and preparation for IRAS.",
+      "Statements completed through the notes. Tax and reporting for each client’s jurisdiction is handled as a separate step — the service is not limited to Singapore.",
     anim: "statements",
+  },
+  {
+    id: "singapore",
+    flagship: true,
+    title: "Singapore tax and financial reporting",
+    industry: "Singapore companies",
+    scope: "Financial statements, notes and IRAS report preparation",
+    role: "Prepared the statements, notes and IRAS reports",
+    challenge:
+      "Each jurisdiction sets its own reporting framework and tax requirements — they have to be understood before the numbers are prepared.",
+    contribution:
+      "Prepared financial statements and notes under the Singapore framework that applies to the company, and prepared reports for IRAS tax filing.",
+    deliverables: "Complete financial statements with notes; reports prepared for IRAS.",
+    result:
+      "Statements completed through the notes, with data prepared for Singapore tax reporting. The same approach carries into new jurisdictions — currently learning Australian taxation.",
+    anim: "jurisdiction",
+  },
+  {
+    id: "construction",
+    flagship: true,
+    title: "Construction accounting and project finance",
+    industry: "Construction · engineering",
+    scope: "Project tagging, invoices and project receipts across years, labour cost per project",
+    role: "Recorded, monitored and reconciled",
+    challenge:
+      "Costs, receipts and labour have to be tracked per project, and an invoice’s status cannot be read from one source alone.",
+    contribution:
+      "Tagged transactions by company and project in Mekari Jurnal, traced invoices against bank receipts and sales records, and linked labour cost to projects.",
+    deliverables:
+      "Project-tagged import templates, an invoice status monitor (outstanding, partial, down payment, settled) and labour allocation per project.",
+    result:
+      "Invoice status rests on matched transactions — an invoice is not called unpaid just because one source has no match.",
+    anim: "projects",
   },
   {
     id: "wp",
@@ -482,7 +505,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
         applied: ["Petty cash mapped to accounts, contacts, projects and expense templates", "Checks for double recording and reimbursed items"] },
       { name: "Owner & Credit-card Transactions", symbol: "Oc", family: "Finance", icon: "people",
         applied: ["Credit cards, reimbursements, top-ups and owner balances"] },
-      { name: "Receivables & Project Receipts", symbol: "Ar", family: "Finance", icon: "calendar",
+      { name: "Receivables & Project Receipts", symbol: "Ar", family: "Finance", icon: "calendar", caseId: "construction",
         applied: ["Invoice monitoring across years: outstanding, partial, down payment, settled"] },
       { name: "Cash-flow Monitoring", symbol: "Cf", family: "Finance", icon: "chart",
         applied: ["Basic financial analysis and cash-flow monitoring for clients"] },
@@ -503,7 +526,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
         applied: ["Construction tax treatment, replacement invoices, gross-up and individual business schemes"] },
       { name: "Tax Appeal Support", symbol: "Ta", family: "Tax", icon: "scale",
         applied: ["Supporting documents compiled for tax appeal submissions"] },
-      { name: "Singapore Tax & Reporting", symbol: "Sg", family: "Tax", icon: "globe", core: true, caseId: "amazon",
+      { name: "Singapore Tax & Reporting", symbol: "Sg", family: "Tax", icon: "globe", core: true, caseId: "singapore",
         applied: ["Statements and notes under the applicable Singapore framework", "Report preparation for IRAS"] },
     ],
   },
@@ -537,7 +560,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
     family: "ERP & Process",
     skills: [
       { name: "ERP Development & Implementation", symbol: "Er", family: "ERP & Process", icon: "nodes", core: true, caseId: "erp",
-        applied: ["ERP live at three construction companies", "Accounting, finance, invoicing and HRD modules"] },
+        applied: ["Custom ERP live at construction clients", "Accounting, finance, invoicing and HRD modules"] },
       { name: "Business Process Analysis", symbol: "Bp", family: "ERP & Process", icon: "flow", core: true, caseId: "erp",
         applied: ["Each client’s process studied before adapting the system", "Bookkeeping inefficiencies identified from SOPs"] },
       { name: "Import Templates & Standards", symbol: "It", family: "ERP & Process", icon: "papers",
@@ -571,8 +594,8 @@ export const SKILL_GROUPS: SkillGroup[] = [
         applied: ["AI tools and subscriptions evaluated for cost, risk and business impact"] },
       { name: "SOPs & Knowledge Bases", symbol: "Sp", family: "Consulting", icon: "papers",
         applied: ["SOPs, workflow documentation, user guides and internal knowledge bases"] },
-      { name: "Remote Multi-entity Work", symbol: "Rm", family: "Consulting", icon: "globe",
-        applied: ["Several entities with different accounting, tax and payroll needs, remotely"] },
+      { name: "Multi-client, Parallel Work", symbol: "Mp", family: "Consulting", icon: "globe", core: true,
+        applied: ["Many clients and several engagements handled in parallel", "Each entity’s accounting, tax and payroll needs handled on its own terms"] },
     ],
   },
 ];
@@ -734,7 +757,7 @@ export const TIMELINE: TimelineStop[] = [
 
 /* ------------------------------------------------------------------ achievements (business first) */
 export const ACHIEVEMENTS: Achievement[] = [
-  { label: "ERP implementations", caption: "Running at construction companies", detail: "Accounting, finance, invoicing and HRD modules", value: 3, icon: "nodes" },
+  { label: "Custom ERP", caption: "Developed and implemented for construction clients", detail: "Core modules live · optimisation ongoing", display: "ERP", icon: "nodes" },
   { label: "Clients", caption: "Client portfolio as Senior Associate", detail: "Monthly bookkeeping and financial reporting", value: 20, suffix: "+", icon: "people" },
   { label: "Transactions / month", caption: "Reconciled in the current portfolio", detail: "Bank, cash, receivables and payables", value: 5000, suffix: "+", icon: "match" },
   { label: "Bank transactions / month", caption: "Reconciled as Accountant & Financial Consultant", detail: "January 2025 — June 2026", value: 3000, suffix: "+", icon: "match" },
@@ -747,11 +770,6 @@ export const ACHIEVEMENTS: Achievement[] = [
   { label: "Scholarship", caption: "CA Scholarship Awardee", detail: "Ikatan Akuntan Indonesia, 2024", display: "CA", icon: "medal" },
 ];
 
-/* ------------------------------------------------------------------ gallery (proof of work) */
-/* Add items here once files are placed in /public/gallery. The section stays hidden while empty.
-   Use the exact label: "Anonymised work sample" | "Demo using synthetic data" | "Illustrative process". */
-export const GALLERY: GalleryItem[] = [];
-
 /* ------------------------------------------------------------------ section numbering */
 export const SECTION_ORDER: string[] = [
   "about",
@@ -761,7 +779,6 @@ export const SECTION_ORDER: string[] = [
   "achievements",
   "experience",
   "credentials",
-  ...(GALLERY.length ? ["gallery"] : []),
   "contact",
 ];
 export const sectionIndex = (id: string) => String(SECTION_ORDER.indexOf(id) + 1).padStart(2, "0");

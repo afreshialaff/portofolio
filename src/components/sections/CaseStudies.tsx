@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { CASES, sectionIndex, type CaseStudy } from "@/lib/data";
 import { prefersReducedMotion, useScrollProgress } from "@/lib/hooks";
+import { BriefcaseButton } from "@/components/briefcase/BriefcaseButton";
 
 /**
  * Case studies — sticky stacked cards. Each card carries its own grayscale,
@@ -17,7 +18,8 @@ const css = `
 @layer theme, base, components, utilities;
 @layer components {
 .cs-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:40px;align-items:end}
-.cs-lede{margin-top:22px;max-width:46ch;color:var(--mute);font-size:15px}
+.cs-lede{margin-top:22px;max-width:52ch;color:var(--mute);font-size:15px}
+.cs-actions{margin-top:22px}
 
 /* ---- balance equation */
 .bal{position:relative;border-radius:26px;background:var(--card);box-shadow:var(--hair);padding:18px 18px 14px}
@@ -123,9 +125,9 @@ function ErpAnim() {
     ["HRD", 338, 158],
   ];
   const cos: [string, number, number][] = [
-    ["Company 1", 92, 262],
-    ["Company 2", 200, 272],
-    ["Company 3", 308, 262],
+    ["Client business flow", 200, 272],
+    ["Optimisation", 76, 262],
+    ["New requests", 324, 262],
   ];
   return (
     <svg className="ca-svg" viewBox="0 0 400 300" aria-hidden="true">
@@ -150,12 +152,95 @@ function ErpAnim() {
       ))}
       {cos.map(([t, x, y], i) => (
         <g key={t} className="pop" style={d(1.1 + i * 0.15)}>
-          <rect x={x - 40} y={y - 13} width="80" height="26" rx="8" fill="var(--soft)" />
-          <text x={x} y={y + 4} textAnchor="middle" className="lbl">
+          <rect x={x - (i === 0 ? 62 : 46)} y={y - 13} width={i === 0 ? 124 : 92} height="26" rx="8" fill={i === 0 ? "var(--ink)" : "var(--soft)"} strokeDasharray={i === 0 ? undefined : "3 3"} stroke={i === 0 ? undefined : "var(--faint)"} />
+          <text x={x} y={y + 4} textAnchor="middle" className={i === 0 ? "lbl inv" : "lbl"} style={i === 0 ? { fill: "#fff" } : undefined}>
             {t}
           </text>
         </g>
       ))}
+    </svg>
+  );
+}
+
+function JurisdictionAnim() {
+  const steps = ["Books & trial balance", "Financial statements", "Notes to the FS", "IRAS report preparation"];
+  return (
+    <svg className="ca-svg" viewBox="0 0 400 300" aria-hidden="true">
+      <text x="20" y="22" className="lbl">
+        SINGAPORE · APPLICABLE FRAMEWORK
+      </text>
+      {steps.map((t, i) => (
+        <g key={t} className="up" style={d(0.3 + i * 0.4)}>
+          <rect x={20 + i * 14} y={40 + i * 46} width="230" height="36" rx="10" fill={i === 3 ? "var(--ink)" : "#fff"} stroke="var(--line)" />
+          <text x={38 + i * 14} y={63 + i * 46} className={i === 3 ? "inv" : undefined}>
+            {t}
+          </text>
+          {i < 3 && (
+            <path d={`M${60 + i * 14} ${76 + i * 46} v10 h14`} fill="none" stroke="var(--faint)" strokeWidth="1.2" className="draw" style={{ ...d(0.6 + i * 0.4), ["--len" as string]: 40 }} />
+          )}
+        </g>
+      ))}
+      {/* globe of jurisdictions */}
+      <g className="pop" style={d(1.9)}>
+        <circle cx="338" cy="96" r="40" fill="none" stroke="var(--ink)" strokeWidth="1.3" />
+        <ellipse cx="338" cy="96" rx="18" ry="40" fill="none" stroke="var(--faint)" />
+        <path d="M298 96h80M304 76h68M304 116h68" stroke="var(--faint)" fill="none" />
+      </g>
+      {[
+        ["ID", 318, 160, true],
+        ["SG", 360, 160, true],
+        ["AU", 339, 198, false],
+      ].map(([t, x, y, on], i) => (
+        <g key={t as string} className="pop" style={d(2.3 + i * 0.2)}>
+          <rect x={(x as number) - 18} y={(y as number) - 13} width="36" height="26" rx="13" fill={on ? "var(--ink)" : "#fff"} stroke="var(--ink)" strokeDasharray={on ? undefined : "3 3"} />
+          <text x={x as number} y={(y as number) + 4} textAnchor="middle" className={on ? "inv" : undefined} style={{ fontSize: 10 }}>
+            {t as string}
+          </text>
+        </g>
+      ))}
+      <text x="339" y="232" textAnchor="middle" className="lbl">
+        AU · learning
+      </text>
+    </svg>
+  );
+}
+
+function ProjectsAnim() {
+  const rows: [string, string, number][] = [
+    ["Project A", "Settled", 1],
+    ["Project B", "Partial", 0.55],
+    ["Project C", "Down payment", 0.25],
+    ["Project D", "Outstanding", 0],
+  ];
+  return (
+    <svg className="ca-svg" viewBox="0 0 400 300" aria-hidden="true">
+      <text x="20" y="22" className="lbl">
+        INVOICE ↔ BANK RECEIPT ↔ SALES RECORD
+      </text>
+      {rows.map(([p, st, k], i) => (
+        <g key={p} className="up" style={d(0.2 + i * 0.2)}>
+          <text x="20" y={64 + i * 50} className="lbl">
+            {p}
+          </text>
+          <rect x="96" y={50 + i * 50} width="190" height="20" rx="6" fill="#fff" stroke="var(--line)" />
+          {k > 0 && <rect x="96" y={50 + i * 50} width={190 * k} height="20" rx="6" fill="var(--ink)" className="gx" style={d(0.9 + i * 0.3)} />}
+          <g className="pop" style={d(1.4 + i * 0.3)}>
+            <rect x="296" y={48 + i * 50} width="86" height="24" rx="12" fill={k === 1 ? "var(--ink)" : "#fff"} stroke="var(--ink)" strokeDasharray={k === 0 ? "3 3" : undefined} />
+            <text x="339" y={64 + i * 50} textAnchor="middle" className={k === 1 ? "inv" : undefined} style={{ fontSize: 10 }}>
+              {st}
+            </text>
+          </g>
+        </g>
+      ))}
+      <text x="20" y="262" className="lbl">
+        Status only from matched transactions
+      </text>
+      <g className="pop" style={d(2.8)}>
+        <rect x="20" y="272" width="150" height="20" rx="10" fill="var(--soft)" />
+        <text x="95" y="286" textAnchor="middle" className="lbl">
+          tagged by company & project
+        </text>
+      </g>
     </svg>
   );
 }
@@ -449,6 +534,8 @@ function Pph21Anim() {
 const ANIMS: Record<CaseStudy["anim"], () => React.JSX.Element> = {
   erp: ErpAnim,
   statements: StatementsAnim,
+  jurisdiction: JurisdictionAnim,
+  projects: ProjectsAnim,
   waterfall: WaterfallAnim,
   recon: ReconAnim,
   allocation: AllocationAnim,
@@ -582,9 +669,13 @@ export default function CaseStudies() {
               </span>
             </h2>
             <p className="cs-lede rv" style={{ ["--i" as string]: 1 }}>
-              Two flagship cases — a custom ERP and Amazon seller reporting — and four everyday engagements. Each card
-              shows the context, my role, what was delivered and the result. The animations illustrate the process only.
+              Four challenging cases — custom ERP, Amazon seller accounting, Singapore reporting and construction project
+              finance — then everyday engagements. They show depth, not the limits of what I take on. Animations
+              illustrate the process only.
             </p>
+            <div className="cs-actions rv" style={{ ["--i" as string]: 2 }}>
+              <BriefcaseButton className="btn btn-primary" />
+            </div>
           </div>
           <Balance />
         </div>
@@ -593,13 +684,20 @@ export default function CaseStudies() {
           {CASES.map((c, i) => {
             const Anim = ANIMS[c.anim];
             return (
-              <li key={c.id} className="case" style={{ ["--i" as string]: i }} aria-labelledby={`case-${c.id}`}>
+              <li
+                key={c.id}
+                className="case"
+                data-case={c.id}
+                data-index={i}
+                style={{ ["--i" as string]: i }}
+                aria-labelledby={`case-${c.id}`}
+              >
                 <div className="case-in">
                   <div className="case-txt">
                     <p className="case-top">
                       <span>
                         <b>{String(i + 1).padStart(2, "0")}</b> / {String(CASES.length).padStart(2, "0")}
-                        {c.flagship && <em className="flag">Flagship</em>}
+                        {c.flagship && <em className="flag">Selected challenging case</em>}
                       </span>
                       <span>{c.industry}</span>
                     </p>

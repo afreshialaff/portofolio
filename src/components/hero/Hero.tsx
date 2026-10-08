@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { PROFILE } from "@/lib/data";
 import { prefersReducedMotion } from "@/lib/hooks";
-import { onAnchorClick } from "@/lib/scroll";
+import { onAnchorClick, scrollToCase } from "@/lib/scroll";
+import { BriefcaseButton } from "@/components/briefcase/BriefcaseButton";
 
 const css = `
 /* declare the cascade order first so this sheet can never reorder Tailwind's layers */
@@ -17,7 +18,7 @@ const css = `
   animation:hero-ghost 1.8s var(--ease) both}
 @keyframes hero-ghost{from{opacity:0;letter-spacing:.04em}to{opacity:1;letter-spacing:-.06em}}
 
-.hero-stage{position:relative;height:min(calc(100svh - 84px),980px);aspect-ratio:768/960;max-width:calc(100vw - 2*var(--gutter));
+.hero-stage{position:relative;height:min(calc(100svh - 120px),900px);aspect-ratio:768/960;max-width:calc(100vw - 2*var(--gutter));
   justify-self:end;mix-blend-mode:multiply;animation:hero-rise 1.6s var(--ease) .1s both}
 .hero-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%}
 .hero-stage::after{content:"";position:absolute;left:12%;right:12%;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
@@ -26,7 +27,7 @@ const css = `
 .hero-text{padding-bottom:clamp(32px,7vh,80px);animation:hero-rise 1.4s var(--ease) .25s both;max-width:720px}
 .hero-eyebrow{font-family:var(--font-mono);font-size:12px;text-transform:uppercase;color:var(--mute);letter-spacing:.02em;line-height:1.6}
 .hero-eyebrow b{color:var(--ink);font-weight:500}
-.h1{margin-top:16px;font-weight:700;font-size:clamp(42px,4.6vw,80px);line-height:.98;letter-spacing:-.05em}
+.h1{margin-top:16px;font-weight:700;font-size:clamp(40px,4vw,70px);line-height:.98;letter-spacing:-.05em}
 .h1 > span{display:block}
 .hero-sub{margin-top:18px;max-width:54ch;color:var(--ink-2);font-size:clamp(15px,1.1vw,17px);line-height:1.55}
 .hero-focus{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:0;border-top:1px solid var(--line)}
@@ -34,12 +35,13 @@ const css = `
 .hero-focus span{grid-row:span 2;font-family:var(--font-mono);font-size:11px;color:var(--mute);padding-top:3px}
 .hero-focus b{font-weight:600;font-size:15px;letter-spacing:-.02em}
 .hero-focus small{font-size:13px;color:var(--mute);line-height:1.4}
-.hero-also{margin-top:10px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--mute);letter-spacing:.02em}
-.hero-proof{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:20px}
-.hero-proof div{display:flex;align-items:baseline;gap:10px}
-.hero-proof b{font-weight:700;font-size:clamp(24px,2.2vw,32px);letter-spacing:-.05em;line-height:1}
-.hero-proof small{max-width:22ch;font-size:12.5px;line-height:1.3;color:var(--mute)}
-.hero-ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.hero-cases{margin-top:16px}
+.hero-cases p{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--mute);letter-spacing:.02em}
+.hero-cases ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.hero-cases a{display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:999px;font-size:13px;background:var(--card);box-shadow:var(--hair);
+  transition:background-color .4s var(--ease),color .4s var(--ease)}
+.hero-cases a:hover{background:var(--ink);color:#fff}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
 
 .sound{position:absolute;right:8%;bottom:12%;z-index:2;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
   background:var(--ink);color:#fff;box-shadow:0 12px 30px -12px rgba(13,13,13,.6);transition:transform .5s var(--ease),background-color .4s var(--ease)}
@@ -210,12 +212,12 @@ export default function Hero() {
             <span className="sr-only">{PROFILE.name}: </span>
             <span>{PROFILE.hero.lines[0]}</span>
             <span>
-              {PROFILE.hero.lines[1]} <em>{PROFILE.hero.accent}</em>
+              {PROFILE.hero.lead} <em>{PROFILE.hero.accent}</em>
             </span>
           </h1>
           <p className="hero-sub">{PROFILE.hero.sub}</p>
-          <ol className="hero-focus" aria-label="Focus areas">
-            {PROFILE.hero.focus.map((f, i) => (
+          <ol className="hero-focus" aria-label="How I work">
+            {PROFILE.hero.points.map((f, i) => (
               <li key={f.title}>
                 <span>{String(i + 1).padStart(2, "0")}</span>
                 <b>{f.title}</b>
@@ -223,22 +225,32 @@ export default function Hero() {
               </li>
             ))}
           </ol>
-          <p className="hero-also">{PROFILE.hero.also}</p>
-          <div className="hero-proof">
-            {PROFILE.hero.proof.map((p) => (
-              <div key={p.label}>
-                <b>{p.value}</b>
-                <small>{p.label}</small>
-              </div>
-            ))}
+          <div className="hero-cases">
+            <p>{PROFILE.hero.selectedLabel}</p>
+            <ul>
+              {PROFILE.hero.selected.map((c) => (
+                <li key={c.id}>
+                  <a
+                    href={`#case-${c.id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToCase(c.id);
+                    }}
+                  >
+                    {c.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="hero-ctas">
             <a href="#contact" className="btn btn-primary" onClick={onAnchorClick}>
-              Discuss your accounting or ERP needs
+              Discuss your business needs
             </a>
             <a href="#cases" className="btn btn-ghost" onClick={onAnchorClick}>
-              Selected cases <span className="arr arr-down" aria-hidden="true">↓</span>
+              Explore selected work <span className="arr arr-down" aria-hidden="true">↓</span>
             </a>
+            <BriefcaseButton className="btn btn-ghost" />
             <a href={PROFILE.resume} className="btn btn-ghost" download>
               Résumé <span className="arr arr-down" aria-hidden="true">↓</span>
             </a>
