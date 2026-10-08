@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ACHIEVEMENTS, type Achievement } from "@/lib/data";
+import { ACHIEVEMENTS, sectionIndex, type Achievement } from "@/lib/data";
 import { prefersReducedMotion } from "@/lib/hooks";
 import { TechLogo } from "@/components/ui/TechLogo";
 
@@ -48,6 +48,7 @@ const css = `
 const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
 
 function format(a: Achievement, v: number) {
+  if (a.display) return a.display;
   return v.toLocaleString("en-US", {
     minimumFractionDigits: a.decimals ?? 0,
     maximumFractionDigits: a.decimals ?? 0,
@@ -127,7 +128,7 @@ export default function Achievements() {
     const set = (i: number, k: number) => {
       const a = ACHIEVEMENTS[i];
       const out = nums[i]?.querySelector<HTMLElement>(".v");
-      if (a && out) out.textContent = format(a, a.value * k);
+      if (a && out && a.value !== undefined) out.textContent = format(a, a.value * k);
     };
     const run = (i: number, animate: boolean) => {
       done.add(i);
@@ -140,6 +141,12 @@ export default function Achievements() {
       };
       requestAnimationFrame(step);
     };
+    // Values are rendered final on the server so they read without JS/animation;
+    // reset to 0 only right before the count-up can run.
+    ACHIEVEMENTS.forEach((a, i) => {
+      if (a.value === undefined || reduced) done.add(i);
+      else set(i, 0);
+    });
     let raf = 0;
     const check = () => {
       raf = 0;
@@ -176,7 +183,7 @@ export default function Achievements() {
         <div className="wrap ach-head">
           <div>
             <p className="tag rv">
-              <b>07</b> — Achievements
+              <b>{sectionIndex("achievements")}</b> — Achievements
             </p>
             <h2 className="h2 rv-mask" id="ach-title" style={{ marginTop: 18 }}>
               <span>
@@ -194,7 +201,7 @@ export default function Achievements() {
 
         <div className="ach-track" ref={trackRef}>
           {ACHIEVEMENTS.map((a, i) => (
-            <article key={a.caption} className="ach-card" aria-label={`${a.label}: ${a.prefix ?? ""}${format(a, a.value)}${a.suffix ?? ""} — ${a.caption}. ${a.detail}`}>
+            <article key={a.caption} className="ach-card" aria-label={`${a.label}: ${a.prefix ?? ""}${format(a, a.value ?? 0)}${a.suffix ?? ""} — ${a.caption}. ${a.detail}`}>
               <div className="ach-top" aria-hidden="true">
                 <span className="ach-logo">
                   <TechLogo name={a.icon} size={30} stroke={1.3} />
@@ -209,9 +216,9 @@ export default function Achievements() {
                   <p className="ach-cap">{a.caption}</p>
                   <p className="ach-detail">{a.detail}</p>
                 </div>
-                <p className={`ach-num ${format(a, a.value).length > 3 ? "long" : ""}`} data-count={i}>
+                <p className={`ach-num ${format(a, a.value ?? 0).length > 3 ? "long" : ""}`} data-count={i}>
                   {a.prefix && <span className="pre">{a.prefix}</span>}
-                  <span className="v">{format(a, 0)}</span>
+                  <span className="v">{format(a, a.value ?? 0)}</span>
                   {a.suffix && <small>{a.suffix}</small>}
                 </p>
               </div>

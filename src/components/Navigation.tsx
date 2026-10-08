@@ -57,7 +57,7 @@ const css = `
 .menu-foot{display:flex;flex-wrap:wrap;gap:8px 20px;padding-bottom:28px;font-size:14px;color:var(--mute)}
 .menu-foot a{all:unset;cursor:pointer;color:var(--ink);text-decoration:underline;text-underline-offset:4px}
 
-@media (max-width: 900px){
+@media (max-width: 1100px){
   .nav-pill{display:none}
   .nav-menu-btn{display:inline-flex}
   .nav-inner{height:72px}
@@ -103,7 +103,7 @@ export default function Navigation() {
   /* active section */
   useEffect(() => {
     const sections = NAV.map((n) => document.getElementById(n.id)).filter(Boolean) as HTMLElement[];
-    const extra = ["top", "certifications"].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    const extra = ["top", "credentials", "gallery"].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
@@ -183,7 +183,7 @@ export default function Navigation() {
             </span>
             <span className="nav-name" aria-hidden="true">
               {PROFILE.name}
-              <small>{PROFILE.role}</small>
+              <small>{PROFILE.roleShort}</small>
             </span>
           </a>
 

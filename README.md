@@ -23,20 +23,27 @@ Requires Node 18.18+ (Node 20/22 recommended). Optional: set `NEXT_PUBLIC_SITE_U
 
 ## Sections
 
-| # | Section | Component | Signature interaction |
+| # | Section | Component | Notes |
 |---|---|---|---|
-| — | Navigation | `src/components/Navigation.tsx` | Initials mark (solid after 40 px, spins on hover), frosted pill, sliding ink indicator (IO `-45% 0px -50% 0px`), 2 px progress bar, full-screen clip-path mobile menu (Esc closes, scroll locked) |
-| — | Hero | `src/components/hero/Hero.tsx` | Looping intro video with `mix-blend-mode: multiply`, ghost first name, sound unlock on first gesture, pauses when < 35 % visible, ▶ / ❚❚ button with ping ring while autoplay is blocked |
-| 01 | About | `src/components/sections/About.tsx` | Lanyard ID card: damped pendulum (pointer velocity → angle), idle sway, 3D flip on hover / tap / Enter / Space |
-| 02 | Skills | `src/components/sections/Skills.tsx` | Periodic table (8 → 6 → 4 cols), family filters, diagonal wave reveal `(row + col) × 40 ms`, sticky inspector with logo pop |
-| 03 | Work | `src/components/sections/Work.tsx` | Expanding accordion gallery (flex 8 vs. slim spines), clip-path wipe on the grayscale "Illustrative UI"; vertical accordion ≤ 1180 px |
-| 04 | Case studies | `src/components/sections/CaseStudies.tsx` | Sticky stacked cards; "Assets = Liabilities + Equity" balance levels out on scroll; per-case grayscale SVG animations (ERP hub, Amazon reports → statements + notes, P&L waterfall, bank ↔ ledger matching, attendance → project cost, PPh 21 payroll/Coretax/P&L comparison) |
-| 05 | Certifications | `src/components/sections/Certifications.tsx` | Ink-flood rows (`::before` scaleX 0 → 1) on hover / focus, sticky heading (server component, zero JS) |
-| 06 | Experience | `src/components/sections/Experience.tsx` | Education + work on one timeline; spine draws with scroll, stops light up as it reaches them; "Next — Your team?" card |
-| 07 | Achievements | `src/components/sections/Achievements.tsx` | Pinned (`position: sticky`) horizontal gallery, count-up (easeOutQuart 1.4 s), centre card lifts 12 px |
-| 08 | Contact + footer | `src/components/sections/Contact.tsx` | Letters hop under the cursor, copy-email chip with `aria-live`, spinning "say hello" badge |
+| — | Navigation | `src/components/Navigation.tsx` | Frosted pill + sliding indicator; full-screen menu ≤ 1100 px |
+| — | Hero | `src/components/hero/Hero.tsx` | Benefit headline, three focus areas, proof row (3 ERP implementations · FS + Notes), CTAs; looping intro video |
+| 01 | About | `sections/About.tsx` | Lanyard ID card; quick facts with both concurrent roles |
+| 02 | Services | `sections/Services.tsx` | Seven services with scope + example deliverables; tax split into preparation / computation / review / submission |
+| 03 | Case studies | `sections/CaseStudies.tsx` | Two flagship cases (ERP, Amazon) + four engagements: industry, scope, role, challenge, contribution, deliverables, result; illustrative animations |
+| 04 | Skills | `sections/Skills.tsx` | 11 core competencies by default, "View all skills" for 44; software (daily use / familiar), training, languages kept separate |
+| 05 | Achievements | `sections/Achievements.tsx` | Business results first; values render final without JS, count-up only as enhancement |
+| 06 | Experience | `sections/Experience.tsx` | Latest first; concurrent roles labelled; early roles summarised; school years removed |
+| 07 | Credentials | `sections/Credentials.tsx` | Qualifications (issuer · year), training, publications & teaching, awards |
+| 08 | Gallery | `sections/Gallery.tsx` | Hidden until `GALLERY` in `src/lib/data.ts` has items (see below) |
+| 08/09 | Contact + footer | `sections/Contact.tsx` | What to include in a first message; email, phone, LinkedIn, résumé |
 
-Shared pieces: `ui/SectionHead.tsx` (mono index tag + heading ending in one Instrument Serif italic word), `ui/RevealObserver.tsx` (`.rv` / `.rv-mask`, once), `ui/TechLogo.tsx` (`BRAND` + `CONCEPT` maps, `isBrand()`), `ui/MiniUI.tsx`, `lib/hooks.ts` (`useInView`, `useScrollProgress`, `prefersReducedMotion`), `lib/scroll.tsx` (Lenis + `scrollToTarget`).
+Section numbers come from `SECTION_ORDER` in `src/lib/data.ts`, so they stay correct when the gallery appears.
+
+### Adding proof-of-work to the gallery
+1. Put the file in `public/gallery/` (image, PDF or MP4). For PDFs and videos also add a preview image.
+2. Add an item to `GALLERY` in `src/lib/data.ts` with one of the exact labels:
+   **Anonymised work sample**, **Demo using synthetic data** or **Illustrative process**.
+3. Optionally link it to a case with `caseId` (`erp`, `amazon`, `wp`, `recon`, `attendance`, `pph21`).
 
 ### Styling notes
 - Design tokens are CSS variables in `src/app/globals.css` (`--paper #f4f2ee`, `--ink #0d0d0d`, `--ease cubic-bezier(.16,1,.3,1)`, …).

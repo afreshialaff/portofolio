@@ -10,6 +10,13 @@ type Brand = { src: string; color: string; label: string };
 export const BRAND: Record<string, Brand> = {
   myob: { src: "/logos/myob.svg", color: "#7B14EF", label: "MYOB" },
   shopee: { src: "/logos/shopee.svg", color: "#EE4D2D", label: "Shopee" },
+  xero: { src: "/logos/xero.svg", color: "#13B5EA", label: "Xero" },
+  quickbooks: { src: "/logos/quickbooks.svg", color: "#2CA01C", label: "QuickBooks" },
+  tiktok: { src: "/logos/tiktok.svg", color: "#000000", label: "TikTok" },
+  blibli: { src: "/logos/blibli.svg", color: "#0072FF", label: "Blibli" },
+  bukalapak: { src: "/logos/bukalapak.svg", color: "#E31E52", label: "Bukalapak" },
+  googlesheets: { src: "/logos/googlesheets.svg", color: "#34A853", label: "Google Sheets" },
+  googleappsscript: { src: "/logos/googleappsscript.svg", color: "#4285F4", label: "Google Apps Script" },
 };
 
 /* 24×24, stroke = currentColor, 1.4 px, round joins. Paths are original line drawings. */

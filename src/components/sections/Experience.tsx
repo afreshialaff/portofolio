@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { TIMELINE } from "@/lib/data";
+import { TIMELINE, sectionIndex } from "@/lib/data";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { onAnchorClick } from "@/lib/scroll";
 
@@ -23,7 +23,7 @@ const css = `
 .tl-dot{position:absolute;left:calc(var(--when) + var(--gap) / 2);top:26px;width:15px;height:15px;margin-left:-7.5px;border-radius:50%;background:var(--paper);
   box-shadow:inset 0 0 0 2px var(--faint);transition:box-shadow .6s var(--ease),background-color .6s var(--ease),transform .6s var(--ease)}
 .tl-stop.is-lit .tl-dot{background:var(--ink);box-shadow:0 0 0 6px rgba(13,13,13,.08);transform:scale(1.1)}
-.tl-card{max-width:780px;padding:20px 22px;border-radius:22px;background:var(--card);box-shadow:var(--hair);opacity:.4;transform:translateX(12px);
+.tl-card{max-width:780px;padding:20px 22px;border-radius:22px;background:var(--card);box-shadow:var(--hair);opacity:.55;transform:translateX(12px);
   transition:opacity .8s var(--ease),transform .8s var(--ease),box-shadow .6s var(--ease)}
 .tl-stop.is-lit .tl-card{opacity:1;transform:none}
 .tl-card:hover{box-shadow:var(--hair),var(--shadow-soft)}
@@ -34,7 +34,12 @@ const css = `
 .tl-place{margin-top:4px;font-size:14.5px;font-weight:500;color:var(--ink-2)}
 .tl-place span{color:var(--mute);font-weight:400}
 .tl-detail{margin-top:10px;font-size:14px;line-height:1.55;color:var(--mute)}
-.tl-next{display:block;position:relative;margin:clamp(28px,4vw,44px) 0 0 calc(var(--when) + var(--gap));max-width:480px;padding:28px 26px;border-radius:24px;
+.tl-items{list-style:none;margin:12px 0 0;padding:0;display:grid}
+.tl-items li{display:grid;gap:2px;padding:8px 0;border-top:1px dashed var(--line);font-size:13.5px}
+.tl-items b{font-weight:500}
+.tl-items span{color:var(--mute);font-size:12.5px}
+.no-js .tl-card{opacity:1;transform:none}
+.tl-next{display:block;position:relative;margin:0 0 clamp(20px,3vw,32px) calc(var(--when) + var(--gap));max-width:480px;padding:28px 26px;border-radius:24px;
   border:1.5px dashed rgba(13,13,13,.25);background:transparent;transition:border-color .5s var(--ease),background-color .5s var(--ease)}
 .tl-next:hover{border-color:var(--ink);background:var(--card)}
 .tl-next small{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--mute)}
@@ -106,9 +111,15 @@ export default function Experience() {
         {css}
       </style>
       <div className="wrap">
-        <SectionHead index="06" label="Experience" title="Education and work, one" accent="path." id="exp-title" />
+        <SectionHead index={sectionIndex("experience")} label="Experience" title="Latest work first, one" accent="path." id="exp-title" />
 
         <div className="tl" ref={tlRef}>
+          <a href="#contact" className="tl-next" onClick={onAnchorClick}>
+            <small>Next —</small>
+            <p>
+              Your <em>team?</em>
+            </p>
+          </a>
           <div className="tl-spine" aria-hidden="true">
             <i ref={fillRef} />
           </div>
@@ -124,7 +135,7 @@ export default function Experience() {
                   <div className="tl-top">
                     <h3>{s.title}</h3>
                     <span className={`tl-kind ${s.kind === "education" ? "edu" : ""}`}>
-                      {s.kind === "education" ? "Education" : "Experience"}
+                      {s.badge ?? (s.kind === "education" ? "Education" : s.kind === "earlier" ? "Summary" : "Experience")}
                     </span>
                   </div>
                   <p className="tl-place">
@@ -132,16 +143,22 @@ export default function Experience() {
                     {s.location && <span> · {s.location}</span>}
                   </p>
                   {s.detail && <p className="tl-detail">{s.detail}</p>}
+                  {s.items && (
+                    <ul className="tl-items">
+                      {s.items.map((it) => (
+                        <li key={it.title}>
+                          <b>{it.title}</b>
+                          <span>
+                            {it.place} · {it.period}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </li>
             ))}
           </ol>
-          <a href="#contact" className="tl-next" onClick={onAnchorClick}>
-            <small>Next —</small>
-            <p>
-              Your <em>team?</em>
-            </p>
-          </a>
         </div>
       </div>
     </section>

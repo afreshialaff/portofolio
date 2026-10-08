@@ -9,31 +9,39 @@ const css = `
 /* declare the cascade order first so this sheet can never reorder Tailwind's layers */
 @layer theme, base, components, utilities;
 @layer components {
-.hero{position:relative;background:var(--paper);min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
-.hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:clamp(16px,2.5vw,40px);width:100%}
-.hero-ghost{position:absolute;left:50%;top:50%;z-index:-1;margin:0;transform:translate(-50%,-46%);
-  font-weight:800;font-size:clamp(84px,21vw,360px);line-height:.8;letter-spacing:-.06em;white-space:nowrap;
-  color:transparent;-webkit-text-stroke:1.2px rgba(13,13,13,.16);user-select:none;pointer-events:none;
+.hero{position:relative;background:var(--paper);min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate;padding-top:84px}
+.hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:clamp(20px,3vw,48px);width:100%}
+.hero-ghost{position:absolute;right:-1vw;top:46%;z-index:-1;margin:0;transform:translateY(-50%);
+  font-weight:800;font-size:clamp(84px,15vw,300px);line-height:.8;letter-spacing:-.06em;white-space:nowrap;
+  color:transparent;-webkit-text-stroke:1.2px rgba(13,13,13,.12);user-select:none;pointer-events:none;
   animation:hero-ghost 1.8s var(--ease) both}
 @keyframes hero-ghost{from{opacity:0;letter-spacing:.04em}to{opacity:1;letter-spacing:-.06em}}
 
-.hero-stage{position:relative;height:min(96svh,1040px);aspect-ratio:768/960;max-width:calc(100vw - 2*var(--gutter));
-  justify-self:center;mix-blend-mode:multiply;animation:hero-rise 1.6s var(--ease) .1s both}
+.hero-stage{position:relative;height:min(calc(100svh - 84px),980px);aspect-ratio:768/960;max-width:calc(100vw - 2*var(--gutter));
+  justify-self:end;mix-blend-mode:multiply;animation:hero-rise 1.6s var(--ease) .1s both}
 .hero-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%}
 .hero-stage::after{content:"";position:absolute;left:12%;right:12%;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
 @keyframes hero-rise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
 
-.hero-left,.hero-right{padding-bottom:clamp(40px,9vh,96px);animation:hero-rise 1.4s var(--ease) both}
-.hero-left{animation-delay:.25s}
-.hero-right{animation-delay:.4s;justify-self:end;display:flex;flex-direction:column;align-items:flex-end;gap:22px;text-align:right}
-.hero-eyebrow{font-family:var(--font-mono);font-size:12px;text-transform:uppercase;color:var(--mute);letter-spacing:.02em;margin-bottom:18px}
-.h1{font-weight:700;font-size:clamp(42px,4.3vw,78px);line-height:.96;letter-spacing:-.05em}
+.hero-text{padding-bottom:clamp(32px,7vh,80px);animation:hero-rise 1.4s var(--ease) .25s both;max-width:720px}
+.hero-eyebrow{font-family:var(--font-mono);font-size:12px;text-transform:uppercase;color:var(--mute);letter-spacing:.02em;line-height:1.6}
+.hero-eyebrow b{color:var(--ink);font-weight:500}
+.h1{margin-top:16px;font-weight:700;font-size:clamp(42px,4.6vw,80px);line-height:.98;letter-spacing:-.05em}
 .h1 > span{display:block}
-.hero-focus{margin-top:20px;max-width:30ch;color:var(--ink-2);font-size:clamp(15px,1.15vw,17px);line-height:1.5}
-.hero-ctas{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-.hero-meta{font-family:var(--font-mono);font-size:12px;color:var(--mute);text-transform:uppercase;line-height:1.7}
+.hero-sub{margin-top:18px;max-width:54ch;color:var(--ink-2);font-size:clamp(15px,1.1vw,17px);line-height:1.55}
+.hero-focus{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:0;border-top:1px solid var(--line)}
+.hero-focus li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:4px 10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.hero-focus span{grid-row:span 2;font-family:var(--font-mono);font-size:11px;color:var(--mute);padding-top:3px}
+.hero-focus b{font-weight:600;font-size:15px;letter-spacing:-.02em}
+.hero-focus small{font-size:13px;color:var(--mute);line-height:1.4}
+.hero-also{margin-top:10px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--mute);letter-spacing:.02em}
+.hero-proof{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:20px}
+.hero-proof div{display:flex;align-items:baseline;gap:10px}
+.hero-proof b{font-weight:700;font-size:clamp(24px,2.2vw,32px);letter-spacing:-.05em;line-height:1}
+.hero-proof small{max-width:22ch;font-size:12.5px;line-height:1.3;color:var(--mute)}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 
-.sound{position:absolute;right:6%;bottom:12%;z-index:2;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+.sound{position:absolute;right:8%;bottom:12%;z-index:2;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
   background:var(--ink);color:#fff;box-shadow:0 12px 30px -12px rgba(13,13,13,.6);transition:transform .5s var(--ease),background-color .4s var(--ease)}
 .sound:hover{transform:scale(1.06)}
 .sound svg{width:16px;height:16px}
@@ -41,26 +49,17 @@ const css = `
 .sound.is-blocked::before{animation:ping 2.2s var(--ease) infinite}
 @keyframes ping{0%{transform:scale(1);opacity:.55}80%,100%{transform:scale(1.9);opacity:0}}
 
-.hero-scroll{position:absolute;left:var(--gutter);bottom:22px;font-family:var(--font-mono);font-size:11px;color:var(--mute);text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.hero-scroll i{width:1px;height:28px;background:var(--line);position:relative;overflow:hidden}
-.hero-scroll i::after{content:"";position:absolute;left:0;top:-100%;width:100%;height:100%;background:var(--ink);animation:drip 2.2s var(--ease) infinite}
-@keyframes drip{to{top:100%}}
-
 @media (max-width: 1100px){
-  .hero-grid{grid-template-columns:minmax(0,1fr) auto}
-  .hero-stage{grid-column:2;grid-row:1 / span 2;height:auto;width:min(54vw,calc(86svh * .8),720px)}
-  .hero-left{grid-column:1;grid-row:1;padding-bottom:0;align-self:end}
-  .hero-right{grid-column:1;grid-row:2;justify-self:start;align-items:flex-start;text-align:left}
-  .hero-ctas{flex-direction:row;flex-wrap:wrap;align-items:flex-start}
+  .hero-stage{height:auto;width:min(44vw,calc(86svh * .8),600px)}
+  .hero-focus small{display:none}
 }
 @media (max-width: 760px){
   .hero{align-items:flex-start;padding-top:72px}
   .hero-grid{grid-template-columns:minmax(0,1fr);gap:0}
-  .hero-stage{grid-column:1;grid-row:1;height:62svh;min-height:380px}
-  .hero-left{grid-row:2;padding-top:20px}
-  .hero-right{grid-row:3;padding-top:22px;padding-bottom:56px;gap:18px}
-  .hero-ghost{top:31svh;font-size:27vw}
-  .hero-scroll{display:none}
+  .hero-stage{grid-row:1;justify-self:center;width:auto;height:58svh;min-height:360px}
+  .hero-text{grid-row:2;padding-top:18px;padding-bottom:56px}
+  .hero-ghost{top:29svh;right:auto;left:50%;transform:translate(-50%,-50%);font-size:27vw}
+  .hero-focus small{display:block}
   .sound{right:4%;bottom:8%}
 }
 }
@@ -201,18 +200,49 @@ export default function Hero() {
       </p>
 
       <div className="wrap hero-grid">
-        <div className="hero-left">
+        <div className="hero-text">
           <p className="hero-eyebrow">
-            {PROFILE.role} — {PROFILE.company}
+            <b>{PROFILE.name}</b> · {PROFILE.credential}
+            <br />
+            {PROFILE.roleShort} — {PROFILE.company}
           </p>
           <h1 className="h1" id="hero-title">
-            <span className="sr-only">{PROFILE.name}, </span>
-            <span>Chartered</span>
+            <span className="sr-only">{PROFILE.name}: </span>
+            <span>{PROFILE.hero.lines[0]}</span>
             <span>
-              <em>Accountant.</em>
+              {PROFILE.hero.lines[1]} <em>{PROFILE.hero.accent}</em>
             </span>
           </h1>
-          <p className="hero-focus">{PROFILE.heroFocus}.</p>
+          <p className="hero-sub">{PROFILE.hero.sub}</p>
+          <ol className="hero-focus" aria-label="Focus areas">
+            {PROFILE.hero.focus.map((f, i) => (
+              <li key={f.title}>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <b>{f.title}</b>
+                <small>{f.text}</small>
+              </li>
+            ))}
+          </ol>
+          <p className="hero-also">{PROFILE.hero.also}</p>
+          <div className="hero-proof">
+            {PROFILE.hero.proof.map((p) => (
+              <div key={p.label}>
+                <b>{p.value}</b>
+                <small>{p.label}</small>
+              </div>
+            ))}
+          </div>
+          <div className="hero-ctas">
+            <a href="#contact" className="btn btn-primary" onClick={onAnchorClick}>
+              Discuss your accounting or ERP needs
+            </a>
+            <a href="#cases" className="btn btn-ghost" onClick={onAnchorClick}>
+              Selected cases <span className="arr arr-down" aria-hidden="true">↓</span>
+            </a>
+            <a href={PROFILE.resume} className="btn btn-ghost" download>
+              Résumé <span className="arr arr-down" aria-hidden="true">↓</span>
+            </a>
+          </div>
         </div>
 
         <div className="hero-stage">
@@ -240,30 +270,8 @@ export default function Hero() {
             {soundOn ? <PauseIcon /> : <PlayIcon />}
           </button>
         </div>
-
-        <div className="hero-right">
-          <p className="hero-meta">
-            {PROFILE.location.split(",").slice(0, 1).join("")}, Indonesia
-            <br />
-            CAAT · CTT · Brevet A &amp; B
-          </p>
-          <div className="hero-ctas">
-            <a href="#work" className="btn btn-primary" onClick={onAnchorClick}>
-              Explore work <span className="arr arr-down" aria-hidden="true">↓</span>
-            </a>
-            <a href="#contact" className="btn btn-ghost" onClick={onAnchorClick}>
-              Let&rsquo;s talk
-            </a>
-            <a href={PROFILE.resume} className="btn btn-ghost" download>
-              Résumé <span className="arr arr-down" aria-hidden="true">↓</span>
-            </a>
-          </div>
-        </div>
       </div>
 
-      <div className="hero-scroll" aria-hidden="true">
-        <i /> Scroll
-      </div>
     </section>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { CASES, type CaseStudy } from "@/lib/data";
+import { CASES, sectionIndex, type CaseStudy } from "@/lib/data";
 import { prefersReducedMotion, useScrollProgress } from "@/lib/hooks";
 
 /**
@@ -31,17 +31,26 @@ const css = `
 /* ---- stacked cards */
 .cs-list{list-style:none;margin:56px 0 0;padding:0;display:grid;gap:26px}
 .case{position:sticky;top:calc(96px + var(--i) * 14px);transform-origin:50% 0;will-change:transform}
-.case-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(20px,3vw,40px);height:min(560px,calc(100svh - 150px));min-height:460px;
+.case-in{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);height:min(660px,calc(100svh - 130px));min-height:520px;
   padding:clamp(20px,2.4vw,32px);border-radius:28px;background:var(--card);box-shadow:var(--hair),0 30px 70px -40px rgba(13,13,13,.35);overflow:hidden}
 .case-txt{display:flex;flex-direction:column;min-width:0;overflow:auto;scrollbar-width:none;transition:opacity .4s linear;opacity:calc(1 - var(--cover,0) * .55)}
 .case-top{display:flex;justify-content:space-between;gap:12px;font-family:var(--font-mono);font-size:11.5px;text-transform:uppercase;color:var(--mute)}
 .case-top b{color:var(--ink);font-weight:500}
-.case h3{margin-top:16px;font-weight:700;font-size:clamp(24px,2.5vw,38px);line-height:1.02;letter-spacing:-.045em}
-.case dl{margin:auto 0 0;padding-top:20px;display:grid;gap:0}
-.case dl div{display:grid;grid-template-columns:104px minmax(0,1fr);gap:14px;padding:12px 0;border-top:1px solid var(--line)}
-.case dt{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;color:var(--mute);padding-top:3px}
-.case dd{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink-2)}
-.case dl div:last-child dd{color:var(--ink);font-weight:500}
+.case h3{margin-top:12px;font-weight:700;font-size:clamp(22px,2.2vw,34px);line-height:1.04;letter-spacing:-.045em}
+.flag{margin-left:10px;padding:2px 8px;border-radius:999px;background:var(--ink);color:#fff;font-style:normal;font-size:10px}
+.case-meta{margin:14px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.case-meta div{padding:9px 11px;border-radius:12px;background:var(--paper)}
+.case-meta dt{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;color:var(--mute)}
+.case-meta dd{margin:3px 0 0;font-size:13px;line-height:1.35;color:var(--ink);font-weight:500}
+.case .status{display:grid;gap:4px}
+.case .status span{display:flex;gap:8px;align-items:baseline}
+.dot{flex:none;width:8px;height:8px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--ink);transform:translateY(-1px)}
+.dot.on{background:var(--ink)}
+.case-body{margin:16px 0 0;padding-top:0;display:grid;gap:0}
+.case-body div{display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;padding:8px 0;border-top:1px solid var(--line)}
+.case-body dt{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;color:var(--mute);padding-top:3px}
+.case-body dd{margin:0;font-size:13.5px;line-height:1.45;color:var(--ink-2)}
+.case-body strong{color:var(--ink);font-weight:600}
 
 .ca-stage{position:relative;min-width:0;border-radius:20px;background:var(--paper);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;display:grid;place-items:center;padding:18px}
 .ca-stage *{animation-play-state:paused!important}
@@ -97,7 +106,8 @@ const css = `
   .case{position:relative;top:0}
   .case-in{grid-template-columns:minmax(0,1fr);height:auto;min-height:0}
   .ca-stage{height:300px}
-  .case dl div{grid-template-columns:minmax(0,1fr);gap:4px}
+  .case-body div{grid-template-columns:minmax(0,1fr);gap:3px}
+  .case-meta{grid-template-columns:minmax(0,1fr)}
 }
 }
 `;
@@ -564,7 +574,7 @@ export default function CaseStudies() {
         <div className="cs-head">
           <div>
             <p className="tag rv">
-              <b>04</b> — Case studies
+              <b>{sectionIndex("cases")}</b> — Case studies
             </p>
             <h2 className="h2 rv-mask" id="cases-title" style={{ marginTop: 18 }}>
               <span>
@@ -572,8 +582,8 @@ export default function CaseStudies() {
               </span>
             </h2>
             <p className="cs-lede rv" style={{ ["--i" as string]: 1 }}>
-              Six cases from accounting, finance, tax and payroll work. Each animation is an illustrative sketch of the
-              process — no client figures are shown.
+              Two flagship cases — a custom ERP and Amazon seller reporting — and four everyday engagements. Each card
+              shows the context, my role, what was delivered and the result. The animations illustrate the process only.
             </p>
           </div>
           <Balance />
@@ -589,11 +599,22 @@ export default function CaseStudies() {
                     <p className="case-top">
                       <span>
                         <b>{String(i + 1).padStart(2, "0")}</b> / {String(CASES.length).padStart(2, "0")}
+                        {c.flagship && <em className="flag">Flagship</em>}
                       </span>
-                      <span>{c.sector}</span>
+                      <span>{c.industry}</span>
                     </p>
                     <h3 id={`case-${c.id}`}>{c.title}</h3>
-                    <dl>
+                    <dl className="case-meta">
+                      <div>
+                        <dt>Scope</dt>
+                        <dd>{c.scope}</dd>
+                      </div>
+                      <div>
+                        <dt>My role</dt>
+                        <dd>{c.role}</dd>
+                      </div>
+                    </dl>
+                    <dl className="case-body">
                       <div>
                         <dt>Challenge</dt>
                         <dd>{c.challenge}</dd>
@@ -603,9 +624,34 @@ export default function CaseStudies() {
                         <dd>{c.contribution}</dd>
                       </div>
                       <div>
+                        <dt>Deliverables</dt>
+                        <dd>{c.deliverables}</dd>
+                      </div>
+                      <div>
                         <dt>Result</dt>
                         <dd>{c.result}</dd>
                       </div>
+                      {c.status && (
+                        <div>
+                          <dt>Status</dt>
+                          <dd className="status">
+                            <span>
+                              <i className="dot on" /> Live — {c.status.live}
+                            </span>
+                            <span>
+                              <i className="dot" /> In progress — {c.status.next}
+                            </span>
+                          </dd>
+                        </div>
+                      )}
+                      {c.beforeAfter && (
+                        <div>
+                          <dt>Before → after</dt>
+                          <dd>
+                            {c.beforeAfter.before} → <strong>{c.beforeAfter.after}</strong>
+                          </dd>
+                        </div>
+                      )}
                     </dl>
                   </div>
                   <div className="ca-stage">

@@ -3,7 +3,7 @@
  * They are labelled "Illustrative UI" on screen and contain no real client data
  * and no figures — only shapes and generic labels.
  */
-import type { Project } from "@/lib/data";
+import type { Service } from "@/lib/data";
 
 const css = `
 /* declare the cascade order first so this sheet can never reorder Tailwind's layers */
@@ -107,7 +107,7 @@ function Row({ r }: { r: number }) {
 
 const sk = (w: string, cls = "") => <span className={`sk ${cls}`} style={{ width: w }} />;
 
-export function MiniUI({ kind, title }: { kind: Project["ui"]; title: string }) {
+export function MiniUI({ kind, title }: { kind: Service["ui"]; title: string }) {
   let body: React.ReactNode = null;
   switch (kind) {
     case "ledger":
@@ -357,17 +357,17 @@ export function MiniUI({ kind, title }: { kind: Project["ui"]; title: string }) 
     case "book":
       body = (
         <>
-          <Bar title="Module book" />
+          <Bar title="Financial statements" />
           <div className="mui-book">
             <div className="mui-page">
-              <span className="mui-label">Taxation</span>
-              <h5>Pembelajaran Pajak Terapan</h5>
+              <span className="mui-label">Financial statements</span>
+              <h5>Notes to the financial statements</h5>
               {sk("90%")}
               {sk("70%")}
               {sk("80%")}
             </div>
             <div className="mui-page">
-              <span className="mui-label">Studi kasus</span>
+              <span className="mui-label">Accounting policies</span>
               {sk("100%")}
               {sk("88%")}
               {sk("94%")}

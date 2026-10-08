@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { PROFILE } from "@/lib/data";
+import { PROFILE, sectionIndex } from "@/lib/data";
 import { prefersReducedMotion } from "@/lib/hooks";
 
 const css = `
@@ -92,6 +92,8 @@ const css = `
 .facts dt{font-family:var(--font-mono);font-size:11.5px;text-transform:uppercase;color:var(--mute);padding-top:2px}
 .facts dd{margin:0;font-size:15px;font-weight:500;letter-spacing:-.01em;overflow-wrap:anywhere}
 .facts dd span{display:block;font-weight:400;color:var(--mute);font-size:13.5px}
+.facts dd .role{color:var(--ink);font-size:15px;margin-bottom:8px}
+.facts dd .role b{font-weight:500}
 .facts a{border-bottom:1px solid var(--line);transition:border-color .4s var(--ease)}
 .facts a:hover{border-color:var(--ink)}
 .quote{margin:0;font-family:var(--font-serif);font-style:italic;font-size:clamp(26px,2.3vw,36px);line-height:1.12;letter-spacing:-.01em}
@@ -184,7 +186,7 @@ export default function About() {
     };
   }, []);
 
-  const strapText = `${PROFILE.name} · ${PROFILE.role} · Chartered Accountant · `;
+  const strapText = `${PROFILE.name} · ${PROFILE.credential} · ${PROFILE.roleShort} · `;
   const [firstPara, secondPara] = [PROFILE.resumeSummary[0], PROFILE.aboutPractice];
 
   return (
@@ -197,7 +199,7 @@ export default function About() {
         <div className="about-col about-text">
           <div>
             <p className="tag rv">
-              <b>01</b> — About
+              <b>{sectionIndex("about")}</b> — About
             </p>
             <h2 className="h2 rv-mask" id="about-title" style={{ marginTop: 18 }}>
               <span>
@@ -290,7 +292,7 @@ export default function About() {
                   </div>
                   <p className="id-name">{PROFILE.name}</p>
                   <p className="id-role">
-                    {PROFILE.role} · {PROFILE.company}
+                    {PROFILE.company}
                   </p>
                   <dl className="id-rows">
                     <div>
@@ -298,8 +300,8 @@ export default function About() {
                       <dd>Chartered Accountant (IAI)</dd>
                     </div>
                     <div>
-                      <dt>Dept.</dt>
-                      <dd>AI &amp; Knowledge Dev.</dd>
+                      <dt>Roles</dt>
+                      <dd>Sr. Associate · Asst. Manager</dd>
                     </div>
                     <div>
                       <dt>Class of</dt>
@@ -354,12 +356,17 @@ export default function About() {
                 </dd>
               </div>
               <div>
-                <dt>Now</dt>
+                <dt>Roles</dt>
                 <dd>
-                  {PROFILE.currentRole}
-                  <span>
-                    {PROFILE.role} · {PROFILE.company}
-                  </span>
+                  {PROFILE.roles.map((r) => (
+                    <span key={r.title} className="role">
+                      <b>{r.title}</b>
+                      <span>
+                        {r.division} · since {r.since}
+                      </span>
+                    </span>
+                  ))}
+                  <span>{PROFILE.company} · held concurrently, in two divisions</span>
                 </dd>
               </div>
               <div>

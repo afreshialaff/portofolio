@@ -25,8 +25,8 @@ const jetbrainsMono = localFont({
   preload: false,
 });
 
-const title = `${PROFILE.name} — ${PROFILE.heroRole}`;
-const description = `${PROFILE.role} · Chartered Accountant (IAI). ${PROFILE.heroFocus}. Based in ${PROFILE.location}.`;
+const title = `${PROFILE.name} — ${PROFILE.credential}`;
+const description = `${PROFILE.credential} — construction accounting & project finance, Amazon seller accounting & Singapore financial reporting, custom ERP implementation, and Indonesian tax support. Based in ${PROFILE.location}.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     type: "profile",
     title,
     description,
-    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: `${PROFILE.name}, ${PROFILE.heroRole}` }],
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: `${PROFILE.name}, ${PROFILE.credential}` }],
   },
   twitter: { card: "summary_large_image", title, description, images: ["/og.jpg"] },
   icons: { icon: "/favicon.svg" },
@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${interTight.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}
+      className={`no-js ${interTight.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <body>{children}</body>

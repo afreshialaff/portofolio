@@ -1,11 +1,10 @@
 /**
  * Single source of truth for every piece of copy on the site.
  * Sources (nothing here is invented):
- *  1. The résumé (public/Afreshia-Laffintha-Asmy-Resume.pdf), a LinkedIn
- *     "Resume generated from profile" export, including its embedded links.
- *  2. The owner's portfolio notes "Portofolio — Finance, Accounting, Tax & Consulting"
- *     (chapters 1–7 + case studies), translated from Bahasa Indonesia.
- *     Client names are not used anywhere on the site.
+ *  1. LinkedIn résumé export and the latest CV (public/Afreshia-Laffintha-Asmy-Resume.pdf).
+ *  2. The owner's portfolio notes (accounting, finance, tax, payroll, ERP, Singapore/Amazon) and
+ *     revision brief, translated from Bahasa Indonesia. Client names are never used.
+ *  3. Software exposure and concurrent roles as confirmed by the owner.
  */
 
 /* ------------------------------------------------------------------ types */
@@ -17,10 +16,8 @@ export type SkillFamily =
   | "Tax"
   | "Payroll"
   | "Audit & Risk"
-  | "Systems"
-  | "AI & Data"
-  | "Advisory"
-  | "Languages";
+  | "ERP & Process"
+  | "Consulting";
 
 export type Skill = {
   name: string;
@@ -28,57 +25,97 @@ export type Skill = {
   family: SkillFamily;
   /** key into TechLogo BRAND or CONCEPT map */
   icon: string;
-  /** where the résumé shows this skill being used */
-  usedIn: string[];
+  /** how the skill is applied in practice */
+  applied: string[];
+  /** optional related case study id */
+  caseId?: string;
+  /** shown in the default (core) view */
+  core?: boolean;
 };
 
 export type SkillGroup = { family: SkillFamily; skills: Skill[] };
 
+export type Tool = { name: string; icon: string; note?: string };
+
 export type TimelineStop = {
-  kind: "education" | "experience";
+  kind: "education" | "experience" | "earlier";
   start: string; // sortable YYYY-MM
   period: string; // display
   title: string;
   place: string;
   location?: string;
   detail?: string;
+  /** compact sub-items (used for the "earlier experience" summary) */
+  items?: { title: string; place: string; period: string }[];
+  badge?: string;
 };
 
-export type Project = {
+export type Service = {
   id: string;
   index: string;
   title: string;
-  kicker: string;
-  description: string;
-  features: string[];
+  kicker: string; // who it is for
+  description: string; // scope
+  features: string[]; // example deliverables
+  stages?: { label: string; text: string }[]; // tax: preparation / computation / review / submission
   tech: { name: string; icon: string }[];
   github?: string;
   /** which illustrative mini-UI to draw */
   ui: "ledger" | "recon" | "tax" | "audit" | "flow" | "apps" | "book" | "payroll" | "erp" | "amazon";
 };
+/** @deprecated alias kept for older imports */
+export type Project = Service;
 
 export type CaseStudy = {
   id: string;
+  flagship?: boolean;
   title: string;
-  sector: string;
+  industry: string;
+  scope: string;
+  role: string;
   challenge: string;
   contribution: string;
+  deliverables: string;
   result: string;
+  /** optional live vs. in-progress split */
+  status?: { live: string; next: string };
+  /** optional before / after, only from confirmed facts */
+  beforeAfter?: { before: string; after: string };
   /** which animated finance visual to draw */
   anim: "erp" | "statements" | "waterfall" | "recon" | "allocation" | "pph21";
 };
 
-export type Certification = { title: string; issuer?: string; kind: "Certification" | "Training" };
+export type CredentialGroup = {
+  id: string;
+  title: string;
+  items: { title: string; issuer?: string; year?: string; note?: string }[];
+};
 
 export type Achievement = {
   label: string;
   caption: string;
   detail: string;
-  value: number;
+  value?: number;
+  /** text shown instead of a counted number */
+  display?: string;
   decimals?: number;
   prefix?: string;
   suffix?: string;
   icon: string;
+};
+
+export type GalleryItem = {
+  id: string;
+  title: string;
+  category: string;
+  summary: string;
+  label: "Anonymised work sample" | "Demo using synthetic data" | "Illustrative process";
+  kind: "image" | "pdf" | "video";
+  /** path under /public, e.g. /gallery/erp-dashboard.webp */
+  src: string;
+  /** preview image for pdf / video */
+  preview?: string;
+  caseId?: string;
 };
 
 /* ------------------------------------------------------------------ profile */
@@ -86,24 +123,57 @@ export const PROFILE = {
   name: "Afreshia Laffintha Asmy",
   firstName: "Afreshia",
   initials: "AL",
-  role: "Senior Associate",
-  headline:
-    "Senior Associate | Chartered Accountant (IAI) | Financial Reporting, Tax Compliance & Internal Audit | CAAT | CTT | Brevet A & B",
-  heroRole: "Chartered Accountant",
-  heroFocus: "Financial Reporting, Tax Compliance & Internal Audit",
-  currentRole: "Assistant Manager – AI & Knowledge Development",
+  credential: "Chartered Accountant (IAI)",
+  /** two concurrent roles at FP Consulting Indonesia, in different divisions */
+  roles: [
+    {
+      title: "Senior Associate",
+      division: "Client accounting & tax",
+      since: "Jul 2026",
+    },
+    {
+      title: "Assistant Manager – AI & Knowledge Development",
+      division: "AI & Knowledge Development",
+      since: "Sep 2026",
+    },
+  ],
+  roleShort: "Senior Associate · Asst. Manager",
   company: "FP Consulting Indonesia",
   email: "afreshiala@gmail.com",
   phone: "0856 3112 892",
   phoneHref: "tel:+628563112892",
   location: "Kota Malang, Jawa Timur, Indonesia",
-  github: undefined as string | undefined, // not listed in the résumé
+  github: undefined as string | undefined,
   linkedin: "https://www.linkedin.com/in/afreshia-laffintha-asmy-",
   resume: "/Afreshia-Laffintha-Asmy-Resume.pdf",
   graduationYear: "2024",
-  degree: "Bachelor of Accounting (Sarjana Akuntansi)",
+  degree: "Bachelor of Accounting (S.Ak.)",
   school: "Universitas Negeri Malang",
   gpa: "3.9/4.0",
+  hero: {
+    lines: ["Books that close.", "Systems that"],
+    accent: "fit.",
+    sub: "Chartered Accountant (IAI) for construction companies, Amazon sellers and Indonesian businesses — accounting, tax, payroll and ERP that hold up to review.",
+    focus: [
+      {
+        title: "Construction Accounting & Project Finance",
+        text: "Project tagging, labour-cost allocation, invoices and project receipts.",
+      },
+      {
+        title: "Amazon Seller Accounting & Singapore Financial Reporting",
+        text: "Amazon reports to full statements and notes; most clients are Singapore-based.",
+      },
+      {
+        title: "Custom ERP Implementation",
+        text: "Accounting, finance, invoicing and HRD modules, live at three construction companies.",
+      },
+    ],
+    also: "Also: Indonesian tax & Coretax support · payroll · monthly reporting",
+    proof: [
+      { value: "3", label: "ERP implementations running at construction clients" },
+      { value: "FS + Notes", label: "Complete financial statements for Amazon sellers" },
+    ],
+  },
   /** Résumé "Ringkasan" (summary), verbatim, split where the PDF merged paragraphs. */
   resumeSummary: [
     "Hello, I’m a Chartered Accountant (IAI) and finance professional based in Indonesia, specializing in financial reporting, tax compliance, accounting operations, and internal audit for small and medium-sized enterprises across construction, manufacturing, retail, and F&B industries.",
@@ -114,18 +184,16 @@ export const PROFILE = {
     "What I bring is a combination of technical accounting expertise, tax knowledge, analytical thinking, and a process-improvement mindset. I enjoy working at the intersection of finance, technology, and business operations, particularly where better financial processes can lead to better business decisions.",
     "I’m currently open to remote and international opportunities where I can contribute to a high-performing team, take on greater responsibility, and continue growing as a finance and accounting professional.",
   ],
-  /** Portfolio notes, "short text for the home page", paragraph 2 (translated). */
   aboutPractice:
-    "My experience covers construction, engineering, trading, and a Singapore retail company selling through Amazon — including complete financial statements through to the notes. I have also implemented an ERP for three client companies, with accounting, finance, invoicing and HRD modules tailored to each business.",
+    "My experience covers construction, engineering, trading and e-commerce. I prepare complete financial statements through to the notes for Amazon sellers — most of them Singapore-based — and I have implemented an ERP for three construction companies, with accounting, finance, invoicing and HRD modules tailored to each business.",
   focus: "Accounting · Finance · Tax · Payroll · ERP",
-  /** Paraphrase of the résumé's own words ("where better financial processes can lead to better business decisions"). */
   quote: "Better financial processes lead to better business decisions.",
-  /** ID-card back — every line is a résumé fact. */
+  /** ID-card back — every line is a confirmed fact. */
   idCardFacts: [
-    "Senior Associate & Chartered Accountant (IAI)",
+    "Chartered Accountant (IAI)",
     "B. Accounting, Universitas Negeri Malang · GPA 3.9/4.0",
-    "20+ clients · 5,000+ transactions reconciled monthly",
-    "ERP implemented for 3 client companies",
+    "ERP implemented for 3 construction companies",
+    "Amazon seller FS through to the notes",
     "CoreTax · Accurate · Mekari Jurnal · MYOB · Zahir",
   ],
   languages: [
@@ -133,157 +201,38 @@ export const PROFILE = {
     { name: "English", level: "Limited Working" },
     { name: "Korean", level: "Elementary" },
   ],
+  contactHints: [
+    "Type of business and the country it operates in",
+    "Accounting system or ERP you use today",
+    "The main problem or the work you need done",
+  ],
 } as const;
 
-/* ------------------------------------------------------------------ nav */
+/* ------------------------------------------------------------------ nav + section order */
 export const NAV: NavItem[] = [
   { id: "about", label: "About" },
-  { id: "skills", label: "Skills" },
-  { id: "work", label: "Work" },
+  { id: "services", label: "Services" },
   { id: "cases", label: "Cases" },
-  { id: "experience", label: "Experience" },
+  { id: "skills", label: "Skills" },
   { id: "achievements", label: "Achievements" },
+  { id: "experience", label: "Experience" },
   { id: "contact", label: "Contact" },
 ];
 
-/* ------------------------------------------------------------------ skills */
-const FP = "FP Consulting Indonesia";
-const FP_SA = "Senior Associate · FP Consulting";
-const FP_AFC = "Accountant & Financial Consultant · FP Consulting";
-const FP_AI = "Asst. Manager, AI & Knowledge Dev. · FP Consulting";
-const TJ = "Accounting & Tax Intern · Tjarmadi & Rekan";
-const MP = "Accounting & Tax Intern · PT Mohan Putra Indonesia";
-const TOP = "Listed as a top skill";
-// portfolio-notes chapters
-const C1 = "Ch.1 Accounting & financial reporting";
-const C2 = "Ch.2 Finance & reconciliation";
-const C3 = "Ch.3 Tax & Coretax support";
-const C4 = "Ch.4 Payroll & project accounting";
-const C5 = "Ch.5 Process & finance systems";
-const C6 = "Ch.6 Consulting & client communication";
-const C7 = "Ch.7 Singapore company & Amazon accounting";
-
-export const SKILL_GROUPS: SkillGroup[] = [
+/* ------------------------------------------------------------------ services */
+export const SERVICES: Service[] = [
   {
-    family: "Accounting",
-    skills: [
-      { name: "Financial Reporting", symbol: "Fr", family: "Accounting", icon: "report", usedIn: [FP_SA, TJ, MP] },
-      { name: "Multi-entity Bookkeeping", symbol: "Bk", family: "Accounting", icon: "ledger", usedIn: [FP_SA, C1] },
-      { name: "Year-End Accounting", symbol: "Ye", family: "Accounting", icon: "calendar", usedIn: [TOP] },
-      { name: "Month-end Working Papers", symbol: "Wp", family: "Accounting", icon: "papers", usedIn: [FP_SA, C1] },
-      { name: "Financial Statement Analysis", symbol: "Fs", family: "Accounting", icon: "chart", usedIn: [FP_AFC, C1] },
-      { name: "Notes to the Financial Statements", symbol: "Nf", family: "Accounting", icon: "book", usedIn: [C7] },
-      { name: "Amazon Seller Accounting", symbol: "Am", family: "Accounting", icon: "boxes", usedIn: [C7] },
-    ],
-  },
-  {
-    family: "Finance",
-    skills: [
-      { name: "Cash & Bank Reconciliation", symbol: "Rc", family: "Finance", icon: "match", usedIn: [FP_SA, FP_AFC, C2] },
-      { name: "Petty Cash & Expense Mapping", symbol: "Pe", family: "Finance", icon: "invoice", usedIn: [C2] },
-      { name: "Credit Card & Owner Transactions", symbol: "Oc", family: "Finance", icon: "people", usedIn: [C2] },
-      { name: "Receivables & Project Receipts", symbol: "Ar", family: "Finance", icon: "calendar", usedIn: [C2] },
-      { name: "Corporate Finance", symbol: "Cf", family: "Finance", icon: "chart", usedIn: ["Professional training through ACCA"] },
-    ],
-  },
-  {
-    family: "Tax",
-    skills: [
-      { name: "Tax Planning", symbol: "Tp", family: "Tax", icon: "compass", usedIn: [TOP, TJ] },
-      { name: "VAT / PPN Working Papers", symbol: "Pn", family: "Tax", icon: "percent", usedIn: [FP, TJ, C3] },
-      { name: "Income Tax / PPh", symbol: "Ph", family: "Tax", icon: "percent", usedIn: [FP, TJ] },
-      { name: "PPh 21 & Coretax XML", symbol: "P2", family: "Tax", icon: "form", usedIn: [C3] },
-      { name: "Corporate Tax (PPh Badan)", symbol: "Pb", family: "Tax", icon: "building", usedIn: [FP_AFC] },
-      { name: "SPT Tahunan", symbol: "St", family: "Tax", icon: "form", usedIn: [FP] },
-      { name: "Regional Tax", symbol: "Rt", family: "Tax", icon: "pin", usedIn: [FP_AFC] },
-      { name: "e-Faktur", symbol: "Ef", family: "Tax", icon: "invoice", usedIn: [TJ] },
-      { name: "Tax Case Consulting", symbol: "Tc", family: "Tax", icon: "chat", usedIn: [C3] },
-      { name: "Tax Appeal Support", symbol: "Ta", family: "Tax", icon: "scale", usedIn: [MP] },
-      { name: "Singapore Reporting (IRAS)", symbol: "Sg", family: "Tax", icon: "globe", usedIn: [C7] },
-    ],
-  },
-  {
-    family: "Payroll",
-    skills: [
-      { name: "Attendance & Wage Allocation", symbol: "Wa", family: "Payroll", icon: "calendar", usedIn: [C4] },
-      { name: "Payroll vs Tax Reconciliation", symbol: "Pr", family: "Payroll", icon: "match", usedIn: [C3, C4] },
-      { name: "Payslip Portal", symbol: "Ps", family: "Payroll", icon: "app", usedIn: [C4] },
-    ],
-  },
-  {
-    family: "Audit & Risk",
-    skills: [
-      { name: "Internal Audit", symbol: "Ia", family: "Audit & Risk", icon: "search", usedIn: [TOP, FP_AFC] },
-      { name: "Internal Controls & SOP Review", symbol: "Ic", family: "Audit & Risk", icon: "shield", usedIn: [FP_AFC] },
-      { name: "Risk Assessment", symbol: "Ra", family: "Audit & Risk", icon: "alert", usedIn: [FP_AFC, FP_AI] },
-      { name: "Forensic Accounting", symbol: "Fa", family: "Audit & Risk", icon: "fingerprint", usedIn: ["Certification: Forensic Accounting and Fraud Examination"] },
-      { name: "Exception Review", symbol: "Ex", family: "Audit & Risk", icon: "alert", usedIn: [C5] },
-      { name: "Stock Opname", symbol: "So", family: "Audit & Risk", icon: "boxes", usedIn: [MP] },
-    ],
-  },
-  {
-    family: "Systems",
-    skills: [
-      { name: "ERP Development", symbol: "Er", family: "Systems", icon: "nodes", usedIn: [C5, "Implemented for 3 client companies"] },
-      { name: "CoreTax", symbol: "Ct", family: "Systems", icon: "app", usedIn: [FP_SA, FP_AFC, C3] },
-      { name: "Mekari Jurnal", symbol: "Mj", family: "Systems", icon: "app", usedIn: [C1, C5] },
-      { name: "Import Templates", symbol: "It", family: "Systems", icon: "papers", usedIn: [C5] },
-      { name: "Accurate", symbol: "Ac", family: "Systems", icon: "app", usedIn: ["Cloud accounting — résumé summary"] },
-      { name: "MYOB", symbol: "My", family: "Systems", icon: "myob", usedIn: ["Cloud accounting — résumé summary"] },
-      { name: "Zahir", symbol: "Zh", family: "Systems", icon: "app", usedIn: ["Cloud accounting — résumé summary"] },
-      { name: "Google Apps Script", symbol: "Gs", family: "Systems", icon: "app", usedIn: [C4] },
-      { name: "DJP Online", symbol: "Dj", family: "Systems", icon: "app", usedIn: [TJ] },
-      { name: "e-SPT", symbol: "Es", family: "Systems", icon: "app", usedIn: [TJ] },
-      { name: "Shopee", symbol: "Sh", family: "Systems", icon: "shopee", usedIn: ["Sales Admin · Sylmi.basic"] },
-    ],
-  },
-  {
-    family: "AI & Data",
-    skills: [
-      { name: "AI & Web Solutions", symbol: "Ai", family: "AI & Data", icon: "spark", usedIn: [FP_AI] },
-      { name: "Workflow Automation", symbol: "Au", family: "AI & Data", icon: "flow", usedIn: [FP_AI] },
-      { name: "AI Governance", symbol: "Ag", family: "AI & Data", icon: "shield", usedIn: [FP_AI] },
-      { name: "Machine Learning for Finance", symbol: "Ml", family: "AI & Data", icon: "nodes", usedIn: ["Professional training through ACCA"] },
-      { name: "Big Data Analytics", symbol: "Bd", family: "AI & Data", icon: "database", usedIn: ["Virtual Intern · PT Kimia Farma × Rakamin"] },
-    ],
-  },
-  {
-    family: "Advisory",
-    skills: [
-      { name: "Financial Consulting", symbol: "Fc", family: "Advisory", icon: "chat", usedIn: [FP_AFC, C6] },
-      { name: "Business Process Analysis", symbol: "Bp", family: "Advisory", icon: "flow", usedIn: [FP_AFC, C5] },
-      { name: "Client Communication", symbol: "Cc", family: "Advisory", icon: "chat", usedIn: [C6] },
-      { name: "SOPs & Documentation", symbol: "Sd", family: "Advisory", icon: "papers", usedIn: [FP_AI, FP_SA] },
-      { name: "Review & Mentoring", symbol: "Rm", family: "Advisory", icon: "people", usedIn: [FP_SA] },
-      { name: "Remote Engagements", symbol: "Re", family: "Advisory", icon: "globe", usedIn: [C6] },
-    ],
-  },
-  {
-    family: "Languages",
-    skills: [
-      { name: "Bahasa Indonesia", symbol: "Id", family: "Languages", icon: "globe", usedIn: ["Native or Bilingual"] },
-      { name: "English", symbol: "En", family: "Languages", icon: "globe", usedIn: ["Limited Working"] },
-      { name: "Korean", symbol: "Ko", family: "Languages", icon: "globe", usedIn: ["Elementary"] },
-    ],
-  },
-];
-
-/* ------------------------------------------------------------------ work (practice areas) */
-/* Seven chapters of the portfolio notes + teaching from the résumé.
-   Descriptions and features follow their wording; no client names. */
-export const PROJECTS: Project[] = [
-  {
-    id: "accounting",
+    id: "monthly",
     index: "01",
-    title: "Accounting & Reporting",
+    title: "Monthly Accounting & Reporting",
     kicker: "Multi-entity · month-end",
     description:
-      "Transaction processing for several entities with different recording and reporting needs — and monthly bookkeeping and reporting for a portfolio of 20+ clients across construction, manufacturing, retail and F&B.",
+      "Monthly bookkeeping and financial statements for businesses in construction, manufacturing, retail and F&B — including entities with different recording and reporting needs.",
     features: [
-      "Chart of accounts, contact and project tagging in Mekari Jurnal",
+      "Monthly financial statements",
       "Month-end working papers: AP, accruals, expenses, AR, sales, cash, inventory, tax",
-      "Separating operating, project and owner costs, reimbursements and internal transfers",
-      "Classification review traced back to supporting documents",
+      "Chart of accounts, contact and project tagging per entity",
+      "Classification review traced to supporting documents",
     ],
     tech: [
       { name: "Mekari Jurnal", icon: "app" },
@@ -294,36 +243,37 @@ export const PROJECTS: Project[] = [
     ui: "ledger",
   },
   {
-    id: "finance",
+    id: "reconciliation",
     index: "02",
-    title: "Finance & Reconciliation",
-    kicker: "Cash · bank · receivables",
+    title: "Reconciliation & Bookkeeping Cleanup",
+    kicker: "Cash · bank · owner · receivables",
     description:
-      "Comparing bank statements with the books, general ledger and reported balances — including cross-account transactions, internal transfers, project receipts and unmatched items. 5,000+ transactions reconciled each month.",
+      "Bank statements compared with the books, general ledger and reported balances — cross-account transfers, project receipts, petty cash, credit cards and owner transactions.",
     features: [
-      "Balance working papers with a list of differences to follow up",
-      "Petty cash mapped to accounts, contacts, projects and expense templates",
-      "Credit cards, reimbursements, top-ups and owner balances",
-      "Invoice monitoring: outstanding, partial, down payment, settled",
+      "Balance working paper with a list of differences to follow up",
+      "Petty cash and expenses mapped to accounts, contacts and projects",
+      "Owner transactions separated from company costs",
+      "Invoice status: outstanding, partial, down payment, settled",
     ],
     tech: [
       { name: "Reconciliation", icon: "match" },
-      { name: "Working Papers", icon: "papers" },
+      { name: "Working papers", icon: "papers" },
     ],
     ui: "recon",
   },
   {
     id: "tax",
     index: "03",
-    title: "Tax & Coretax",
-    kicker: "PPh 21 · PPN · SPT",
+    title: "Indonesian Tax & Coretax Support",
+    kicker: "PPN · PPh · PPh 21 · SPT",
     description:
-      "Indonesian tax compliance — VAT/PPN, income tax/PPh and annual returns (SPT Tahunan) through CoreTax — plus payroll data prepared for PPh 21 and Coretax XML.",
-    features: [
-      "PPh 21 data for permanent and non-permanent employees",
-      "Payroll vs Coretax vs P&L comparison, Jan–Aug 2026",
-      "VAT OUT / VAT IN mapping, invoices vs sales listing, DPP & PPN per item",
-      "Consulting on construction tax cases, replacement invoices and gross-up",
+      "Tax work for Indonesian entities, split by what is actually done at each stage. Preparing a file is not the same as a filing being accepted — acceptance follows the system’s confirmation.",
+    features: [],
+    stages: [
+      { label: "Preparation", text: "Tax data, working papers, PPh 21 import templates and Coretax XML" },
+      { label: "Computation", text: "PPN (DPP and VAT per item), PPh, PPh Badan and tax simulations" },
+      { label: "Review", text: "VAT IN / OUT vs. sales listing; payroll vs. Coretax vs. P&L" },
+      { label: "Submission", text: "Monthly and annual returns through CoreTax for assigned clients" },
     ],
     tech: [
       { name: "CoreTax", icon: "app" },
@@ -335,229 +285,420 @@ export const PROJECTS: Project[] = [
   {
     id: "payroll",
     index: "04",
-    title: "Payroll & Projects",
-    kicker: "Attendance · wage allocation",
+    title: "Payroll & Project Labour Allocation",
+    kicker: "Construction · projects",
     description:
-      "Workbooks that connect the worker master, weekly attendance, projects, extra pay and the allocation of labour cost to projects.",
+      "Workbooks that connect the worker master, weekly attendance, projects and extra pay to the allocation of labour cost per project.",
     features: [
-      "Mapping repaired across 19 weekly periods",
-      "Dynamic dropdowns and an overtime component",
-      "Eight attendance and project sheets reconciled (Sep 2026)",
-      "Payslip portal in Google Sheets + Apps Script (ID & PIN, PDF) — in development",
+      "Weekly attendance mapping and dynamic dropdowns",
+      "Overtime component and wage changes by period",
+      "Labour-cost allocation to projects",
+      "Payslip portal in Google Sheets + Apps Script (in development)",
     ],
     tech: [
-      { name: "Google Apps Script", icon: "app" },
-      { name: "Payroll", icon: "people" },
+      { name: "Google Apps Script", icon: "googleappsscript" },
+      { name: "Google Sheets", icon: "googlesheets" },
     ],
     ui: "payroll",
   },
   {
-    id: "systems",
+    id: "amazon",
     index: "05",
-    title: "Process & ERP",
-    kicker: "3 client companies",
+    title: "Amazon Seller Accounting",
+    kicker: "E-commerce · any jurisdiction",
     description:
-      "Developed and implemented an ERP for three construction client companies. The core accounting, finance, invoicing and HRD modules are complete, running smoothly and now in optimisation.",
+      "Amazon reports turned into bookkeeping and complete financial statements, through to the notes. Most clients are Singapore-based; the service itself is not limited to Singapore.",
     features: [
-      "Workflows tailored to each company’s business process",
-      "Import templates for bank, expense and credit memo (Mekari Jurnal)",
-      "Exception review before final files are prepared",
-      "AI tools, automation workflows and SOPs (Asst. Manager, AI & Knowledge)",
-    ],
-    tech: [
-      { name: "ERP", icon: "nodes" },
-      { name: "Automation", icon: "flow" },
-      { name: "Governance", icon: "shield" },
-    ],
-    ui: "erp",
-  },
-  {
-    id: "consulting",
-    index: "06",
-    title: "Consulting & Review",
-    kicker: "Findings → next steps",
-    description:
-      "Helping clients understand unclear transactions, recording differences and how financial data links to tax needs — then turning technical findings into explanations they can act on.",
-    features: [
-      "Analysis built on supporting sources and clarifying questions",
-      "Evaluate SOPs and internal controls; assess operational and financial risks",
-      "First-level review of staff work before Manager review",
-      "Remote work across several entities and systems",
-    ],
-    tech: [
-      { name: "Internal Audit", icon: "search" },
-      { name: "Client Communication", icon: "chat" },
-    ],
-    ui: "audit",
-  },
-  {
-    id: "singapore",
-    index: "07",
-    title: "Singapore & Amazon",
-    kicker: "Full FS with notes",
-    description:
-      "Accounting for a Singapore retail company selling through Amazon — turning Amazon reports into bookkeeping and complete financial statements, through to the notes.",
-    features: [
-      "Amazon reports as the data source for the books",
-      "Financial statements with notes to the financial statements",
-      "Disclosures updated to the company’s situation",
-      "Report preparation for IRAS tax filing",
+      "Amazon reports as the source for the books",
+      "Bookkeeping and monthly records",
+      "Complete financial statements",
+      "Notes to the financial statements",
     ],
     tech: [
       { name: "Amazon reports", icon: "boxes" },
-      { name: "IRAS", icon: "globe" },
+      { name: "Sellermetrix", icon: "chart" },
     ],
     ui: "amazon",
   },
   {
-    id: "writing",
-    index: "08",
-    title: "Teaching & Writing",
-    kicker: "Assistant Lecturer · UM",
+    id: "singapore",
+    index: "06",
+    title: "Singapore Tax & Financial Reporting",
+    kicker: "Singapore companies",
     description:
-      "Prepared two training module books on taxation and assisted faculty research at Universitas Negeri Malang.",
+      "Financial statements and notes prepared under the Singapore reporting framework that applies to the company, with report preparation for IRAS tax filing.",
     features: [
-      "Patent: Pembelajaran Pajak Terapan: Studi Kasus, Perhitungan, Dan Pelaporan",
-      "NSAFE 7 — Analisis Sistem Transaksi Dropship dalam Perspektif Islam",
-      "Tantangan X Peluang: Strategi Give, Give, and Give Manuru.Id dalam Upaya Meningkatkan Integritas Akademik",
-      "Data collection, analysis and drafting for faculty research",
+      "Financial statements with notes",
+      "Disclosures updated to the company’s situation",
+      "Accounting policies and supporting notes",
+      "Report preparation for IRAS",
     ],
     tech: [
-      { name: "Taxation", icon: "percent" },
-      { name: "Research", icon: "search" },
+      { name: "IRAS", icon: "globe" },
+      { name: "Sleek", icon: "app" },
     ],
     ui: "book",
   },
+  {
+    id: "erp",
+    index: "07",
+    title: "Custom ERP & Finance Workflow",
+    kicker: "3 construction companies",
+    description:
+      "An ERP developed around each company’s own business flow, plus standardised import templates and review steps for the finance team.",
+    features: [
+      "Accounting, finance, invoicing and HRD modules",
+      "Workflows configured per company",
+      "Import templates: bank, expense, credit memo",
+      "Exception review before final files are prepared",
+    ],
+    tech: [
+      { name: "ERP", icon: "nodes" },
+      { name: "Automation", icon: "flow" },
+    ],
+    ui: "erp",
+  },
 ];
+/** @deprecated alias */
+export const PROJECTS = SERVICES;
 
 /* ------------------------------------------------------------------ case studies */
-/* "Case studies for the website" from the portfolio notes (translated). */
 export const CASES: CaseStudy[] = [
   {
     id: "erp",
+    flagship: true,
     title: "A tailored ERP for three construction companies",
-    sector: "Construction · systems",
-    challenge: "Each company has different business processes and operational needs.",
-    contribution:
-      "Developed an ERP with accounting, finance, invoicing and HRD modules, adapting the workflow to each client’s requirements.",
-    result:
-      "Implemented and running smoothly at three client companies. Core modules meet the clients’ needs; optimisation and construction-specific requests continue.",
+    industry: "Construction · 3 client companies",
+    scope: "Accounting, finance, invoicing and HRD modules",
+    role: "Business-process analysis, development and implementation",
+    challenge: "Each company runs a different business flow, so one standard setup would not fit all three.",
+    contribution: "Studied each company’s process, then adapted the system’s features and workflows to it.",
+    deliverables: "Three ERP implementations with accounting, finance, invoicing and HRD modules.",
+    result: "Core modules are complete, running smoothly and meet the requirements agreed with each client.",
+    status: {
+      live: "Core accounting, finance, invoicing and HRD modules in daily use at three companies",
+      next: "Optimisation and additional construction-specific requests",
+    },
+    beforeAfter: {
+      before: "Three companies, three different business flows",
+      after: "One ERP, configured to each company’s flow",
+    },
     anim: "erp",
   },
   {
     id: "amazon",
-    title: "Financial statements for a Singapore Amazon seller",
-    sector: "Retail · Singapore",
-    challenge: "A retail company selling through Amazon needs its marketplace reports turned into company financial statements.",
+    flagship: true,
+    title: "Amazon seller accounting through to the notes",
+    industry: "E-commerce · Amazon sellers, mostly Singapore-based",
+    scope: "Bookkeeping → financial statements → notes",
+    role: "Report processing, bookkeeping, statements and notes",
+    challenge: "Marketplace reports have to become company books and full financial statements.",
     contribution:
-      "Processed Amazon reports for accounting, prepared complete financial statements and updated the notes to the financial statements for Singapore reporting.",
-    result: "Financial statements completed through to the notes, with data preparation supporting Singapore tax reporting.",
+      "Processed Amazon reports into bookkeeping, prepared complete financial statements and updated the notes to the company’s situation.",
+    deliverables: "Financial statements with notes to the financial statements.",
+    result:
+      "Statements completed through the notes. Tax and reporting for each client’s jurisdiction is a separate step — for Singapore clients, reporting under the applicable framework and preparation for IRAS.",
     anim: "statements",
   },
   {
     id: "wp",
     title: "Monthly accounting working papers",
-    sector: "Month-end close",
+    industry: "Multi-entity · month-end close",
+    scope: "AP, accruals and expenses — August 2026 update",
+    role: "Prepared and updated the working papers",
     challenge: "Expense details and supporting balances were spread across the general ledger and the financial statements.",
     contribution: "Updated the AP, accrual and expense working papers and the related reports.",
-    result: "Expense details and balances are available in working papers for review and tracing back to the general ledger.",
+    deliverables: "Expense breakdown (G&A, financial and tax expenses, other payables) with balance-sheet and P&L support.",
+    result: "Balances and expense details sit in one working paper, traceable back to the general ledger for review.",
     anim: "waterfall",
   },
   {
     id: "recon",
-    title: "Cash, bank and expense reconciliation",
-    sector: "Finance",
+    title: "Cash, bank, expense and owner reconciliation",
+    industry: "Finance · construction and trading",
+    scope: "Bank, cash, expense and owner transactions",
+    role: "Traced, mapped and prepared the templates",
     challenge: "Internal transfers, expense payments and owner transactions follow different recording patterns.",
     contribution: "Traced bank movements, mapped transaction types and prepared recording templates.",
-    result: "A transaction recap and a list of differences separate matched items from those that need follow-up.",
+    deliverables: "Transaction recap, list of differences and recording templates; cash & bank working paper with existing formulas kept.",
+    result: "Matched items are separated from those that need follow-up; open differences stay visible for review.",
     anim: "recon",
   },
   {
     id: "attendance",
-    title: "Attendance and labour-cost allocation",
-    sector: "Payroll · projects",
-    challenge: "Formulas and mapping between periods caused attendance totals and project costs to disagree.",
-    contribution: "Repaired the weekly mapping, dropdowns, overtime and cross-sheet formulas.",
-    result: "The link between attendance data and project allocation was restored for the periods reviewed.",
+    title: "Attendance and project labour-cost allocation",
+    industry: "Construction · payroll",
+    scope: "19 weekly periods; 8 attendance and project sheets",
+    role: "Repaired and rebuilt the workbook logic",
+    challenge: "Formulas and mapping between periods made attendance totals and project costs disagree.",
+    contribution: "Repaired the weekly mapping, dropdowns, overtime and cross-sheet formulas, keeping earlier periods intact.",
+    deliverables: "Weekly mapping, dynamic dropdowns, an overtime component and corrected cross-sheet formulas.",
+    result: "Attendance and project allocation are linked again and their totals agree for the periods reviewed.",
     anim: "allocation",
   },
   {
     id: "pph21",
-    title: "PPh 21 reconciliation",
-    sector: "Tax",
+    title: "Payroll, Coretax and GL reconciliation",
+    industry: "Tax · payroll",
+    scope: "Payroll vs. Coretax vs. P&L, January–August 2026",
+    role: "Built the comparison and the import files",
     challenge: "Differences between payroll, Coretax and the expense in the P&L needed to be explained.",
-    contribution: "Built a per-period comparison with components, differences and follow-up actions.",
-    result: "Differences are identified and can be reviewed by source — disclosed for review, not assumed to be tax underpaid.",
+    contribution: "Built a per-period comparison with components, differences, causes and follow-up actions.",
+    deliverables: "Comparison sheet; Excel and Coretax XML templates for non-permanent employees.",
+    result: "Differences are identified by source for review — not treated as tax underpaid. Preparing files is kept separate from filing confirmation.",
     anim: "pph21",
   },
 ];
 
-/* ------------------------------------------------------------------ certifications */
-export const CERTIFICATIONS: Certification[] = [
-  { title: "Chartered Accountant", issuer: "IAI", kind: "Certification" },
-  { title: "Certified Associate Accounting Technician (CAAT)", kind: "Certification" },
-  { title: "Forensic Accounting and Fraud Examination", kind: "Certification" },
-  { title: "CTT", kind: "Certification" },
-  { title: "Brevet A & B", kind: "Certification" },
-  { title: "Corporate Finance", issuer: "ACCA", kind: "Training" },
-  { title: "Machine Learning Applications for Finance Professionals", issuer: "ACCA", kind: "Training" },
-];
-
-/* ------------------------------------------------------------------ education + experience */
-export const EDUCATION: TimelineStop[] = [
-  { kind: "education", start: "2014-07", period: "2014 — 2017", title: "Junior High School", place: "SMP Negeri 2 Donomulyo" },
-  { kind: "education", start: "2017-07", period: "2017 — 2020", title: "High School Diploma, Science (IPA)", place: "SMA Negeri 1 Pagak" },
+/* ------------------------------------------------------------------ skills: practical expertise */
+export const SKILL_GROUPS: SkillGroup[] = [
   {
-    kind: "education",
-    start: "2021-08",
-    period: "2021 — 2024",
-    title: "Bachelor (Sarjana), Accounting",
-    place: "Universitas Negeri Malang",
-    detail: "GPA 3.9/4.0",
+    family: "Accounting",
+    skills: [
+      { name: "Monthly Accounting & Close", symbol: "Mc", family: "Accounting", icon: "ledger", core: true, caseId: "wp",
+        applied: ["Monthly bookkeeping and reporting for a client portfolio", "Month-end working papers: AP, accruals, expenses, AR, cash, tax"] },
+      { name: "Financial Reporting", symbol: "Fr", family: "Accounting", icon: "report", core: true,
+        applied: ["Monthly statements across construction, manufacturing, retail and F&B", "Financial statements for 10+ MSMEs; four years of historical statements"] },
+      { name: "Notes to the Financial Statements", symbol: "Nf", family: "Accounting", icon: "book", caseId: "amazon",
+        applied: ["Complete statements through to the notes for Amazon sellers"] },
+      { name: "Multi-entity Bookkeeping", symbol: "Me", family: "Accounting", icon: "papers",
+        applied: ["Chart of accounts, contact and project tagging per entity in Mekari Jurnal"] },
+      { name: "Year-End Accounting", symbol: "Ye", family: "Accounting", icon: "calendar",
+        applied: ["Annual returns and year-end documentation for assigned clients"] },
+      { name: "Cost Accounting", symbol: "Ca", family: "Accounting", icon: "chart", caseId: "attendance",
+        applied: ["Labour-cost allocation to projects", "Inventory issues linked to cost of sales"] },
+      { name: "Amazon Seller Accounting", symbol: "Am", family: "Accounting", icon: "boxes", core: true, caseId: "amazon",
+        applied: ["Amazon reports processed into bookkeeping", "Most clients Singapore-based; not limited to Singapore"] },
+    ],
+  },
+  {
+    family: "Finance",
+    skills: [
+      { name: "Cash & Bank Reconciliation", symbol: "Rc", family: "Finance", icon: "match", core: true, caseId: "recon",
+        applied: ["Bank, cash, receivables and payables reconciled each month", "Differences listed for follow-up"] },
+      { name: "Bookkeeping Cleanup", symbol: "Bc", family: "Finance", icon: "search", caseId: "recon",
+        applied: ["Classification review of owner, project and operating transactions"] },
+      { name: "Petty Cash & Expense Mapping", symbol: "Pe", family: "Finance", icon: "invoice",
+        applied: ["Petty cash mapped to accounts, contacts, projects and expense templates", "Checks for double recording and reimbursed items"] },
+      { name: "Owner & Credit-card Transactions", symbol: "Oc", family: "Finance", icon: "people",
+        applied: ["Credit cards, reimbursements, top-ups and owner balances"] },
+      { name: "Receivables & Project Receipts", symbol: "Ar", family: "Finance", icon: "calendar",
+        applied: ["Invoice monitoring across years: outstanding, partial, down payment, settled"] },
+      { name: "Cash-flow Monitoring", symbol: "Cf", family: "Finance", icon: "chart",
+        applied: ["Basic financial analysis and cash-flow monitoring for clients"] },
+    ],
+  },
+  {
+    family: "Tax",
+    skills: [
+      { name: "Indonesian Tax Compliance", symbol: "Tx", family: "Tax", icon: "percent", core: true,
+        applied: ["PPN, PPh, PPh Badan, Regional Tax and SPT Tahunan through CoreTax"] },
+      { name: "PPh 21 & Coretax XML", symbol: "P2", family: "Tax", icon: "form", caseId: "pph21",
+        applied: ["Payroll data prepared for PPh 21; Excel and Coretax XML for non-permanent employees"] },
+      { name: "VAT / PPN Working Papers", symbol: "Pn", family: "Tax", icon: "percent",
+        applied: ["VAT OUT / IN mapping, invoices vs. sales listing, DPP and PPN per item"] },
+      { name: "Tax Planning & Simulations", symbol: "Tp", family: "Tax", icon: "compass",
+        applied: ["Tax calculation simulations to project future liabilities"] },
+      { name: "Tax Case Analysis", symbol: "Tc", family: "Tax", icon: "chat",
+        applied: ["Construction tax treatment, replacement invoices, gross-up and individual business schemes"] },
+      { name: "Tax Appeal Support", symbol: "Ta", family: "Tax", icon: "scale",
+        applied: ["Supporting documents compiled for tax appeal submissions"] },
+      { name: "Singapore Tax & Reporting", symbol: "Sg", family: "Tax", icon: "globe", core: true, caseId: "amazon",
+        applied: ["Statements and notes under the applicable Singapore framework", "Report preparation for IRAS"] },
+    ],
+  },
+  {
+    family: "Payroll",
+    skills: [
+      { name: "Attendance & Wage Allocation", symbol: "Wa", family: "Payroll", icon: "calendar", core: true, caseId: "attendance",
+        applied: ["Weekly attendance linked to projects across 19 periods"] },
+      { name: "Payroll–Coretax–GL Reconciliation", symbol: "Pr", family: "Payroll", icon: "match", caseId: "pph21",
+        applied: ["Per-period comparison with component, difference, cause and follow-up"] },
+      { name: "Payslip Portal", symbol: "Ps", family: "Payroll", icon: "app",
+        applied: ["Google Sheets + Apps Script portal with ID & PIN, periods and PDF (in development)"] },
+    ],
+  },
+  {
+    family: "Audit & Risk",
+    skills: [
+      { name: "Internal Audit", symbol: "Ia", family: "Audit & Risk", icon: "search",
+        applied: ["Financial audits and review of client bookkeeping and reporting"] },
+      { name: "Internal Controls & SOP Review", symbol: "Ic", family: "Audit & Risk", icon: "shield", core: true,
+        applied: ["Clients’ SOPs and internal controls evaluated for operational and financial risk"] },
+      { name: "Risk Assessment", symbol: "Ra", family: "Audit & Risk", icon: "alert",
+        applied: ["Accounting and tax risks identified during review"] },
+      { name: "Exception Review", symbol: "Ex", family: "Audit & Risk", icon: "alert",
+        applied: ["Incomplete transactions held for follow-up before final files"] },
+      { name: "Stock Opname", symbol: "So", family: "Audit & Risk", icon: "boxes",
+        applied: ["Stock counts at three warehouses reconciled with the records"] },
+    ],
+  },
+  {
+    family: "ERP & Process",
+    skills: [
+      { name: "ERP Development & Implementation", symbol: "Er", family: "ERP & Process", icon: "nodes", core: true, caseId: "erp",
+        applied: ["ERP live at three construction companies", "Accounting, finance, invoicing and HRD modules"] },
+      { name: "Business Process Analysis", symbol: "Bp", family: "ERP & Process", icon: "flow", core: true, caseId: "erp",
+        applied: ["Each client’s process studied before adapting the system", "Bookkeeping inefficiencies identified from SOPs"] },
+      { name: "Import Templates & Standards", symbol: "It", family: "ERP & Process", icon: "papers",
+        applied: ["Bank, expense and credit-memo imports with date, number, COA, contact and tagging rules"] },
+      { name: "Cloud Accounting Rollout", symbol: "Cr", family: "ERP & Process", icon: "app",
+        applied: ["Cloud-based accounting systems implemented for clients"] },
+      { name: "Workflow Automation", symbol: "Au", family: "ERP & Process", icon: "flow",
+        applied: ["Repetitive accounting, tax and payroll workflows automated"] },
+      { name: "AI Tools & Governance", symbol: "Ag", family: "ERP & Process", icon: "spark",
+        applied: ["AI and web-based tools with quality control, testing and data-security standards"] },
+    ],
+  },
+  {
+    family: "Consulting",
+    skills: [
+      { name: "Client Advisory", symbol: "Cv", family: "Consulting", icon: "chat", core: true,
+        applied: ["Unclear transactions and recording differences explained against their sources"] },
+      { name: "Findings & Next Steps", symbol: "Fn", family: "Consulting", icon: "report",
+        applied: ["Technical accounting and tax issues turned into actions clients can take"] },
+      { name: "Client Onboarding", symbol: "On", family: "Consulting", icon: "people",
+        applied: ["New-client onboarding, internal documentation, templates and checklists"] },
+      { name: "Data Requests & Clarification", symbol: "Dr", family: "Consulting", icon: "form",
+        applied: ["Primary client contact for data requests, clarifications and progress updates"] },
+      { name: "Quality Review", symbol: "Qr", family: "Consulting", icon: "shield",
+        applied: ["First-level review of staff work against SOPs and checklists"] },
+      { name: "Mentoring", symbol: "Mt", family: "Consulting", icon: "people",
+        applied: ["Technical guidance for junior and probation staff"] },
+      { name: "Team Training & Adoption", symbol: "Tt", family: "Consulting", icon: "book",
+        applied: ["Team members trained on new tools and procedures"] },
+      { name: "Tool Evaluation", symbol: "Te", family: "Consulting", icon: "compass",
+        applied: ["AI tools and subscriptions evaluated for cost, risk and business impact"] },
+      { name: "SOPs & Knowledge Bases", symbol: "Sp", family: "Consulting", icon: "papers",
+        applied: ["SOPs, workflow documentation, user guides and internal knowledge bases"] },
+      { name: "Remote Multi-entity Work", symbol: "Rm", family: "Consulting", icon: "globe",
+        applied: ["Several entities with different accounting, tax and payroll needs, remotely"] },
+    ],
   },
 ];
 
-export const EXPERIENCE: TimelineStop[] = [
+/* ------------------------------------------------------------------ skills: software & tools */
+export const TOOLS: { daily: Tool[]; exposure: Tool[] } = {
+  daily: [
+    { name: "Accurate", icon: "app" },
+    { name: "Mekari Jurnal", icon: "app" },
+    { name: "Zahir", icon: "app" },
+    { name: "MYOB", icon: "myob" },
+    { name: "ESB", icon: "app" },
+    { name: "Ordoo", icon: "app" },
+    { name: "CoreTax", icon: "app" },
+    { name: "e-Faktur · e-SPT · DJP Online", icon: "invoice" },
+    { name: "Microsoft Excel, Word, PowerPoint, Visio", icon: "papers" },
+    { name: "Google Sheets", icon: "googlesheets" },
+    { name: "Google Apps Script", icon: "googleappsscript" },
+  ],
+  exposure: [
+    { name: "Xero", icon: "xero" },
+    { name: "QuickBooks", icon: "quickbooks" },
+    { name: "Sellermetrix", icon: "chart" },
+    { name: "Sleek", icon: "app" },
+    { name: "Amazon Web Services (AWS)", icon: "database", note: "cloud computing" },
+    { name: "Shopee", icon: "shopee" },
+    { name: "TikTok Shop", icon: "tiktok" },
+    { name: "Tokopedia", icon: "boxes" },
+    { name: "Lazada", icon: "boxes" },
+    { name: "Blibli", icon: "blibli" },
+    { name: "Bukalapak", icon: "bukalapak" },
+  ],
+};
+
+export const TRAINING: { title: string; issuer?: string; status?: string }[] = [
+  { title: "Corporate Finance", issuer: "ACCA" },
+  { title: "Machine Learning Applications for Finance Professionals", issuer: "ACCA" },
+  { title: "Australian taxation", status: "Ongoing learning" },
+  { title: "Project-based virtual internship: Big Data Analytics", issuer: "PT Kimia Farma × Rakamin" },
+  { title: "Project-based virtual internship: Product & Business Development", issuer: "Bank Muamalat × Rakamin" },
+];
+
+/* ------------------------------------------------------------------ credentials */
+export const CREDENTIALS: CredentialGroup[] = [
+  {
+    id: "qualifications",
+    title: "Professional qualifications",
+    items: [
+      { title: "Chartered Accountant (Advanced Level)", issuer: "Ikatan Akuntan Indonesia", year: "2025" },
+      { title: "Tax Brevet A & B", year: "2025" },
+      { title: "Certified Tax Technician (CTT)", year: "2025" },
+      { title: "Certified Associate Accounting Technician (CAAT)", year: "2024" },
+      { title: "Forensic Accounting and Fraud Examination" },
+      { title: "Google Certified Educator", year: "2024" },
+    ],
+  },
+  {
+    id: "training",
+    title: "Training & continuing development",
+    items: [
+      { title: "Corporate Finance", issuer: "ACCA" },
+      { title: "Machine Learning Applications for Finance Professionals", issuer: "ACCA" },
+      { title: "Australian taxation", note: "Ongoing learning" },
+    ],
+  },
+  {
+    id: "publications",
+    title: "Publications & teaching",
+    items: [
+      { title: "Green Bonds in Asia and Europe: Green Investment or Greenwashing?", issuer: "Journal of International Business Ethics (Springer Nature), Scopus Q2", year: "2025" },
+      { title: "Pembelajaran Pajak Terapan: Studi Kasus, Perhitungan, Dan Pelaporan", note: "Patent" },
+      { title: "NSAFE 7 — Analisis Sistem Transaksi Dropship dalam Perspektif Islam" },
+      { title: "Tantangan X Peluang: Strategi Give, Give, and Give Manuru.Id dalam Upaya Meningkatkan Integritas Akademik" },
+      { title: "Two training module books on taxation", issuer: "Universitas Negeri Malang" },
+    ],
+  },
+  {
+    id: "awards",
+    title: "Awards",
+    items: [
+      { title: "CA Scholarship Awardee", issuer: "Ikatan Akuntan Indonesia", year: "2024" },
+      { title: "1st Place, Global Entrepreneur and Education Development Competition", issuer: "Universitas Negeri Malang", year: "2024" },
+      { title: "1st Place, Office Festival — Business Model Canvas Competition", issuer: "UNS", year: "2024" },
+      { title: "1st Place, Business Plan Competition, Business Fair 2024", issuer: "Unila", year: "2024" },
+      { title: "1st Place, National Conference LABMA Scientific Fair", issuer: "UII", year: "2023" },
+      { title: "Winner, Internal Accounting Competition — Accounting Festival “Sharmaine Eleftheria Eunoia”", year: "2021" },
+      { title: "3rd Winner, Accounting Olympiad — Java-Bali Accounting, Skill, and English Competition (ASEC)" },
+      { title: "Presenter, The 2nd International Creative Business Model Canvas Exhibition" },
+      { title: "Participant, National Accounting Olympiad · Olimpiade Sains “Ekonomi” Kabupaten (OSK)" },
+    ],
+  },
+];
+
+/* ------------------------------------------------------------------ experience (latest first) */
+export const TIMELINE: TimelineStop[] = [
   {
     kind: "experience",
-    start: "2020-06",
-    period: "Jun 2020 — Mar 2021",
-    title: "Sales Admin",
-    place: "Sylmi.basic",
-    location: "Malang, Jawa Timur",
-    detail: "Daily financial reports, sales reports for >4,000 customers per month, and all sales on Shopee.",
+    start: "2026-09",
+    period: "Sep 2026 — Present",
+    title: "Assistant Manager – AI & Knowledge Development",
+    place: "FP Consulting Indonesia",
+    location: "Kota Tangerang",
+    badge: "Concurrent role",
+    detail:
+      "AI-powered tools, automation workflows, AI governance, testing and SOPs for accounting, tax, payroll and reporting; trains the team and evaluates tools for cost, risk and impact.",
   },
   {
     kind: "experience",
-    start: "2023-07",
-    period: "Jul — Dec 2023",
-    title: "Accounting & Tax Intern",
-    place: "Kantor Konsultan Pajak Tjarmadi & Rekan",
-    location: "Kota Blitar",
-    detail: "Prepared financial statements for 10+ MSMEs; SPT PPh, SPT PPN, e-Faktur, e-SPT and DJP Online.",
+    start: "2026-07",
+    period: "Jul 2026 — Present",
+    title: "Senior Associate",
+    place: "FP Consulting Indonesia",
+    location: "Kota Tangerang",
+    badge: "Concurrent role",
+    detail:
+      "Monthly bookkeeping and reporting for a client portfolio; reconciliations and tax working papers; first-level review and mentoring of junior staff; primary client contact.",
   },
   {
     kind: "experience",
-    start: "2023-09a",
-    period: "Sep 2023",
-    title: "Project-Based Virtual Intern: Big Data Analytics",
-    place: "PT. Kimia Farma, Tbk × Rakamin Academy",
-  },
-  {
-    kind: "experience",
-    start: "2023-09b",
-    period: "Sep — Nov 2023",
-    title: "Accounting and Tax Intern",
-    place: "PT Mohan Putra Indonesia",
-    location: "Kalitidu, Bojonegoro",
-    detail: "Financial statements for the past four years, tax-appeal documents, stock-opname at three warehouses.",
-  },
-  {
-    kind: "experience",
-    start: "2023-10",
-    period: "Oct 2023",
-    title: "Project-Based Virtual Intern: Product and Business Development Officer",
-    place: "PT Bank Muamalat Indonesia Tbk × Rakamin Academy",
+    start: "2025-01",
+    period: "Jan 2025 — Jun 2026",
+    title: "Accountant and Financial Consultant",
+    place: "FP Consulting Indonesia",
+    location: "Kota Tangerang",
+    detail:
+      "Monthly statements across construction, manufacturing, retail and F&B; bank reconciliations of 3,000+ transactions monthly; PPN, PPh, PPh Badan, Regional Tax and SPT Tahunan through CoreTax.",
   },
   {
     kind: "experience",
@@ -569,56 +710,58 @@ export const EXPERIENCE: TimelineStop[] = [
     detail: "Prepared two training module books on taxation; supported faculty research.",
   },
   {
-    kind: "experience",
-    start: "2025-01",
-    period: "Jan 2025 — Jun 2026",
-    title: "Accountant and Financial Consultant",
-    place: "FP Consulting Indonesia",
-    location: "Kota Tangerang",
-    detail: "Bank reconciliations of 3,000+ transactions monthly; PPN, PPh, PPh Badan and SPT Tahunan through CoreTax.",
+    kind: "education",
+    start: "2021-08",
+    period: "2021 — 2024",
+    title: "Bachelor (Sarjana), Accounting",
+    place: "Universitas Negeri Malang",
+    detail: "GPA 3.9/4.0",
   },
   {
-    kind: "experience",
-    start: "2026-07",
-    period: "Jul 2026 — Present",
-    title: "Senior Associate",
-    place: "FP Consulting Indonesia",
-    location: "Kota Tangerang",
-    detail: "Monthly bookkeeping and reporting for a client portfolio; first-level review and mentoring of junior staff.",
-  },
-  {
-    kind: "experience",
-    start: "2026-09",
-    period: "Sep 2026 — Present",
-    title: "Assistant Manager – AI & Knowledge Development",
-    place: "FP Consulting Indonesia",
-    location: "Kota Tangerang",
-    detail: "AI-powered tools, automation workflows, AI governance and SOPs for accounting services.",
+    kind: "earlier",
+    start: "2020-06",
+    period: "2020 — 2023",
+    title: "Earlier experience",
+    place: "Internships and first roles",
+    items: [
+      { title: "Accounting & Tax Intern — financial statements for 10+ MSMEs", place: "Kantor Konsultan Pajak Tjarmadi & Rekan", period: "Jul — Dec 2023" },
+      { title: "Accounting & Tax Intern — four years of statements, tax appeal, stock opname", place: "PT Mohan Putra Indonesia", period: "Sep — Nov 2023" },
+      { title: "Project-based virtual internships", place: "Bank Muamalat · Kimia Farma × Rakamin", period: "Sep — Oct 2023" },
+      { title: "Sales Admin — daily financial and sales reports", place: "Sylmi.basic", period: "Jun 2020 — Mar 2021" },
+    ],
   },
 ];
 
-export const TIMELINE: TimelineStop[] = [...EDUCATION, ...EXPERIENCE].sort((a, b) =>
-  a.start.localeCompare(b.start),
-);
-
-/* ------------------------------------------------------------------ achievements */
+/* ------------------------------------------------------------------ achievements (business first) */
 export const ACHIEVEMENTS: Achievement[] = [
-  { label: "GPA", caption: "Bachelor of Accounting", detail: "Universitas Negeri Malang, 2021 — 2024", value: 3.9, decimals: 1, suffix: "/4", icon: "cap" },
-  { label: "Clients", caption: "Monthly bookkeeping & reporting", detail: "Portfolio at FP Consulting Indonesia", value: 20, suffix: "+", icon: "people" },
-  { label: "Transactions / month", caption: "Reconciled each month", detail: "Bank, cash, receivables and payables", value: 5000, suffix: "+", icon: "match" },
-  { label: "Winner", caption: "Internal Accounting Competition", detail: "Accounting Festival 2021 “Sharmaine Eleftheria Eunoia”", value: 1, suffix: "st", icon: "trophy" },
-  { label: "3rd Winner", caption: "Accounting Olympiad", detail: "Java-Bali Accounting, Skill, and English Competition (ASEC)", value: 3, suffix: "rd", icon: "medal" },
-  { label: "ERP implementations", caption: "Client companies running it", detail: "Accounting, finance, invoicing and HRD modules", value: 3, icon: "nodes" },
-  { label: "Weekly periods", caption: "Attendance mapping repaired", detail: "Payroll & project-cost workbook", value: 19, icon: "calendar" },
+  { label: "ERP implementations", caption: "Running at construction companies", detail: "Accounting, finance, invoicing and HRD modules", value: 3, icon: "nodes" },
+  { label: "Clients", caption: "Client portfolio as Senior Associate", detail: "Monthly bookkeeping and financial reporting", value: 20, suffix: "+", icon: "people" },
+  { label: "Transactions / month", caption: "Reconciled in the current portfolio", detail: "Bank, cash, receivables and payables", value: 5000, suffix: "+", icon: "match" },
+  { label: "Bank transactions / month", caption: "Reconciled as Accountant & Financial Consultant", detail: "January 2025 — June 2026", value: 3000, suffix: "+", icon: "match" },
+  { label: "Full reporting", caption: "Statements through to the notes", detail: "Amazon sellers · Singapore reporting framework", display: "Notes", icon: "book" },
+  { label: "Jurisdictions", caption: "Indonesia and Singapore reporting", detail: "CoreTax filings · IRAS report preparation", value: 2, icon: "globe" },
+  { label: "Weekly periods", caption: "Attendance mapping repaired", detail: "Payroll and project-cost workbook", value: 19, icon: "calendar" },
   { label: "MSMEs", caption: "Financial statements prepared", detail: "Kantor Konsultan Pajak Tjarmadi & Rekan", value: 10, suffix: "+", icon: "report" },
-  { label: "Module books", caption: "Training modules on taxation", detail: "Assistant Lecturer, Universitas Negeri Malang", value: 2, icon: "book" },
-  { label: "Customers / month", caption: "Covered by monthly sales reports", detail: "Sales Admin, Sylmi.basic", value: 4000, prefix: ">", icon: "chart" },
-  {
-    label: "More honours",
-    caption: "Olympiads & exhibitions",
-    detail: "National Accounting Olympiad (participant) · OSK “Ekonomi” · Presenter, 2nd International Creative BMC Exhibition",
-    value: 3,
-    prefix: "+",
-    icon: "star",
-  },
+  { label: "GPA", caption: "Bachelor of Accounting", detail: "Universitas Negeri Malang", value: 3.9, decimals: 1, suffix: "/4", icon: "cap" },
+  { label: "First places", caption: "Accounting and business competitions", detail: "2021 — 2024 · see Credentials", value: 5, suffix: "×", icon: "trophy" },
+  { label: "Scholarship", caption: "CA Scholarship Awardee", detail: "Ikatan Akuntan Indonesia, 2024", display: "CA", icon: "medal" },
 ];
+
+/* ------------------------------------------------------------------ gallery (proof of work) */
+/* Add items here once files are placed in /public/gallery. The section stays hidden while empty.
+   Use the exact label: "Anonymised work sample" | "Demo using synthetic data" | "Illustrative process". */
+export const GALLERY: GalleryItem[] = [];
+
+/* ------------------------------------------------------------------ section numbering */
+export const SECTION_ORDER: string[] = [
+  "about",
+  "services",
+  "cases",
+  "skills",
+  "achievements",
+  "experience",
+  "credentials",
+  ...(GALLERY.length ? ["gallery"] : []),
+  "contact",
+];
+export const sectionIndex = (id: string) => String(SECTION_ORDER.indexOf(id) + 1).padStart(2, "0");

@@ -1,18 +1,20 @@
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/hero/Hero";
 import About from "@/components/sections/About";
-import Skills from "@/components/sections/Skills";
-import Work from "@/components/sections/Work";
+import Services from "@/components/sections/Services";
 import CaseStudies from "@/components/sections/CaseStudies";
-import Certifications from "@/components/sections/Certifications";
-import Experience from "@/components/sections/Experience";
+import Skills from "@/components/sections/Skills";
 import Achievements from "@/components/sections/Achievements";
+import Experience from "@/components/sections/Experience";
+import Credentials from "@/components/sections/Credentials";
+import Gallery from "@/components/sections/Gallery";
 import Contact, { Footer } from "@/components/sections/Contact";
 import { RevealObserver } from "@/components/ui/RevealObserver";
 import { SmoothScroll } from "@/lib/scroll";
 
 /**
- * Hero → About → Skills → Work → Case studies → Certifications → Experience → Achievements → Contact
+ * Hero → About → Services → Case studies → Skills → Achievements → Experience → Credentials
+ * → Gallery (only when it has items) → Contact.
  * One continuous page: no loader, no curtains, no page transitions.
  */
 export default function App() {
@@ -23,12 +25,13 @@ export default function App() {
       <main id="main">
         <Hero />
         <About />
-        <Skills />
-        <Work />
+        <Services />
         <CaseStudies />
-        <Certifications />
-        <Experience />
+        <Skills />
         <Achievements />
+        <Experience />
+        <Credentials />
+        <Gallery />
         <Contact />
       </main>
       <Footer />

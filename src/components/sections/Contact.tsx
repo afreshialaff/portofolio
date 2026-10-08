@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { PROFILE } from "@/lib/data";
+import { PROFILE, sectionIndex } from "@/lib/data";
 import { onAnchorClick } from "@/lib/scroll";
 
 const css = `
@@ -15,7 +15,12 @@ const css = `
 .ct-l{display:inline-block;will-change:transform}
 .ct-l.hop{animation:hop .62s var(--ease)}
 @keyframes hop{0%{transform:none}35%{transform:translateY(-.16em)}65%{transform:translateY(.03em)}100%{transform:none}}
-.ct-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px;align-items:end;margin-top:clamp(40px,7vw,90px)}
+.ct-brief{margin-top:clamp(32px,5vw,56px);display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:24px;align-items:start}
+.ct-lead{font-size:clamp(17px,1.4vw,20px);line-height:1.45;letter-spacing:-.01em;max-width:34ch}
+.ct-brief ol{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.ct-brief li{display:flex;gap:16px;padding:12px 0;border-bottom:1px solid var(--line);font-size:15px}
+.ct-brief li span{font-family:var(--font-mono);font-size:11px;color:var(--mute);padding-top:3px}
+.ct-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px;align-items:end;margin-top:clamp(36px,5vw,64px)}
 .ct-email{display:flex;align-items:center;flex-wrap:wrap;gap:14px 18px}
 .ct-email a{font-weight:600;font-size:clamp(24px,4vw,56px);letter-spacing:-.045em;line-height:1.05;
   background:linear-gradient(var(--ink),var(--ink)) 0 100%/100% 2px no-repeat;padding-bottom:6px;overflow-wrap:anywhere;
@@ -38,6 +43,7 @@ const css = `
 .foot a:hover{border-color:var(--ink)}
 @media (max-width: 720px){
   .ct-row{grid-template-columns:minmax(0,1fr)}
+  .ct-brief{grid-template-columns:minmax(0,1fr)}
   .ct-badge{width:120px;height:120px}
 }
 }
@@ -98,12 +104,24 @@ export default function Contact() {
       </style>
       <div className="wrap">
         <p className="tag rv">
-          <b>08</b> — Contact
+          <b>{sectionIndex("contact")}</b> — Contact
         </p>
         <h2 className="ct-title" id="contact-title" aria-label="Let's build something together.">
           <HopLine text="Let’s build" />
           <HopLine text="something together." />
         </h2>
+
+        <div className="ct-brief rv">
+          <p className="ct-lead">Discuss your accounting or ERP needs. A short first message helps — include:</p>
+          <ol>
+            {PROFILE.contactHints.map((h, i) => (
+              <li key={h}>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                {h}
+              </li>
+            ))}
+          </ol>
+        </div>
 
         <div className="ct-row">
           <div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PROJECTS } from "@/lib/data";
+import { SERVICES, sectionIndex } from "@/lib/data";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { MiniUI } from "@/components/ui/MiniUI";
 import { TechLogo } from "@/components/ui/TechLogo";
@@ -35,7 +35,12 @@ const css = `
 .acc-kick b{color:var(--ink);font-weight:500}
 .acc-text h3{margin-top:18px;font-weight:700;font-size:clamp(30px,3.2vw,48px);line-height:1;letter-spacing:-.045em}
 .acc-text > p{margin-top:16px;color:var(--ink-2);font-size:15.5px;line-height:1.6;max-width:52ch}
-.acc-feats{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px}
+.acc-dl{margin-top:20px;font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;color:var(--mute)}
+.acc-stages{margin:18px 0 0;display:grid;border-top:1px solid var(--line)}
+.acc-stages div{display:grid;grid-template-columns:104px minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.acc-stages dt{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;color:var(--ink);padding-top:2px}
+.acc-stages dd{margin:0;font-size:13.5px;line-height:1.4;color:var(--ink-2)}
+.acc-feats{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px}
 .acc-feats li{position:relative;padding-left:16px;font-size:13.5px;line-height:1.4;color:var(--ink-2)}
 .acc-feats li::before{content:"";position:absolute;left:0;top:.5em;width:7px;height:1.5px;background:var(--ink)}
 .acc-tech{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:22px}
@@ -61,25 +66,31 @@ const css = `
 }
 `;
 
-export default function Work() {
+export default function Services() {
   const [open, setOpen] = useState(0);
 
   return (
-    <section id="work" className="section" aria-labelledby="work-title">
-      <style href="work" precedence="component">
+    <section id="services" className="section" aria-labelledby="services-title">
+      <style href="services" precedence="component">
         {css}
       </style>
       <div className="wrap">
         <div className="work-intro">
-          <SectionHead index="03" label="Selected work" title="What I do," accent="daily." id="work-title" />
+          <SectionHead
+            index={sectionIndex("services")}
+            label="Services"
+            title="Scoped by what you"
+            accent="receive."
+            id="services-title"
+          />
           <p className="rv">
-            Eight areas of practice, from the résumé and portfolio notes. The sketches on the right are illustrative, not
-            client data.
+            Seven services, each with its scope and example deliverables. Software and training are listed separately
+            under Skills. The sketches are illustrative, not client data.
           </p>
         </div>
 
-        <div className="acc rv" style={{ ["--i" as string]: 1, ["--n" as string]: PROJECTS.length }}>
-          {PROJECTS.map((p, i) => {
+        <div className="acc rv" style={{ ["--i" as string]: 1, ["--n" as string]: SERVICES.length }}>
+          {SERVICES.map((p, i) => {
             const isOpen = open === i;
             return (
               <article
@@ -109,11 +120,25 @@ export default function Work() {
                     </p>
                     <h3 id={`acc-h-${p.id}`}>{p.title}</h3>
                     <p>{p.description}</p>
-                    <ul className="acc-feats">
-                      {p.features.map((f) => (
-                        <li key={f}>{f}</li>
-                      ))}
-                    </ul>
+                    {p.stages ? (
+                      <dl className="acc-stages">
+                        {p.stages.map((st) => (
+                          <div key={st.label}>
+                            <dt>{st.label}</dt>
+                            <dd>{st.text}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    ) : (
+                      <>
+                        <p className="acc-dl">Example deliverables</p>
+                        <ul className="acc-feats">
+                          {p.features.map((f) => (
+                            <li key={f}>{f}</li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
                     <div className="acc-tech">
                       {p.tech.map((t) => (
                         <span key={t.name} className="chip">
