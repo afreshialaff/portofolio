@@ -115,7 +115,7 @@ export const PROFILE = {
   roles: [
     {
       title: "Senior Associate",
-      division: "Client accounting & tax",
+      division: "Accounting",
       since: "Jul 2026",
     },
     {
@@ -133,7 +133,7 @@ export const PROFILE = {
   github: undefined as string | undefined,
   linkedin: "https://www.linkedin.com/in/afreshia-laffintha-asmy-",
   resume: "/Afreshia-Laffintha-Asmy-Resume.pdf",
-  graduationYear: "2024",
+  graduationYear: "2025",
   degree: "Bachelor of Accounting (S.Ak.)",
   school: "Universitas Negeri Malang",
   gpa: "3.9/4.0",
@@ -167,7 +167,7 @@ export const PROFILE = {
   /** Résumé "Ringkasan" (summary), verbatim, split where the PDF merged paragraphs. */
   resumeSummary: [
     "Hello, I’m a Chartered Accountant (IAI) and finance professional based in Indonesia, specializing in financial reporting, tax compliance, accounting operations, and internal audit for small and medium-sized enterprises across construction, manufacturing, retail, and F&B industries.",
-    "As a Senior Associate at FP Consulting Indonesia, I manage end-to-end monthly bookkeeping and financial reporting for a portfolio of 20+ clients, reconcile 5,000+ transactions across bank, cash, receivables, and payables accounts each month, and handle Indonesian tax compliance, including VAT/PPN, income tax/PPh, and annual tax returns (SPT Tahunan) through the government’s CoreTax system.",
+    "As a Senior Associate at FP Consulting Indonesia, I manage end-to-end monthly bookkeeping and financial reporting. I have handled 20+ multi-entity clients and checked and processed 5,000+ transactions in total across bank, cash, receivables, and payables accounts, and handle Indonesian tax compliance, including VAT/PPN, income tax/PPh, and annual tax returns (SPT Tahunan) through the government’s CoreTax system.",
     "My work goes beyond routine accounting. I focus on ensuring that financial information is accurate, well-supported, and useful for decision-making. I regularly investigate reconciliation discrepancies, review supporting documentation, identify accounting and tax risks, and coordinate adjustments with clients to ensure their financial records remain reliable and compliant.",
     "I also support businesses in improving their accounting processes through cloud-based accounting systems, including Accurate, Mekari Jurnal, MYOB, and Zahir. This includes helping clients streamline transaction recording, improve financial reporting workflows, strengthen documentation, and build more efficient accounting processes.",
     "I hold a Bachelor’s degree in Accounting from Universitas Negeri Malang with a GPA of 3.9/4.0, and I have pursued additional professional training in corporate finance and machine learning applications for finance professionals through ACCA.",
@@ -340,7 +340,7 @@ export const SERVICES: Service[] = [
       "Accounting, finance, invoicing and HRD modules",
       "Workflows configured per company",
       "Import templates: bank, expense, credit memo",
-      "Exception review before final files are prepared",
+      "Testing, user support and training",
     ],
     tech: [
       { name: "ERP", icon: "nodes" },
@@ -360,9 +360,9 @@ export const CASES: CaseStudy[] = [
     title: "A custom ERP built around each client’s business flow",
     industry: "Construction clients",
     scope: "Accounting, finance, invoicing and HRD modules",
-    role: "Business-process analysis, development and implementation",
+    role: "Business-process analysis, AI-assisted development (Claude), testing, user support and training",
     challenge: "Each company runs its own business flow, so a standard setup would not fit how they actually work.",
-    contribution: "Studied each company’s process first, then adapted the system’s features and workflows to it.",
+    contribution: "Studied each company’s process, built and adapted the system with AI-assisted development (Claude), tested it, then supported and trained the users.",
     deliverables: "ERP implementations with accounting, finance, invoicing and HRD modules, configured per company.",
     result: "Core modules are complete, running smoothly and meet the requirements agreed with each client.",
     status: {
@@ -560,7 +560,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
     family: "ERP & Process",
     skills: [
       { name: "ERP Development & Implementation", symbol: "Er", family: "ERP & Process", icon: "nodes", core: true, caseId: "erp",
-        applied: ["Custom ERP live at construction clients", "Accounting, finance, invoicing and HRD modules"] },
+        applied: ["Custom ERP live at construction clients", "AI-assisted development (Claude), testing, user support and training"] },
       { name: "Business Process Analysis", symbol: "Bp", family: "ERP & Process", icon: "flow", core: true, caseId: "erp",
         applied: ["Each client’s process studied before adapting the system", "Bookkeeping inefficiencies identified from SOPs"] },
       { name: "Import Templates & Standards", symbol: "It", family: "ERP & Process", icon: "papers",
@@ -620,7 +620,7 @@ export const TOOLS: { daily: Tool[]; exposure: Tool[] } = {
     { name: "QuickBooks", icon: "quickbooks" },
     { name: "Sellermetrix", icon: "chart" },
     { name: "Sleek", icon: "app" },
-    { name: "Amazon Web Services (AWS)", icon: "database", note: "cloud computing" },
+    { name: "Amazon Services", icon: "boxes", note: "seller platform" },
     { name: "Shopee", icon: "shopee" },
     { name: "TikTok Shop", icon: "tiktok" },
     { name: "Tokopedia", icon: "boxes" },
@@ -721,7 +721,7 @@ export const TIMELINE: TimelineStop[] = [
     place: "FP Consulting Indonesia",
     location: "Kota Tangerang",
     detail:
-      "Monthly statements across construction, manufacturing, retail and F&B; bank reconciliations of 3,000+ transactions monthly; PPN, PPh, PPh Badan, Regional Tax and SPT Tahunan through CoreTax.",
+      "Monthly statements across construction, manufacturing, retail and F&B; bank reconciliations; PPN, PPh, PPh Badan, Regional Tax and SPT Tahunan through CoreTax.",
   },
   {
     kind: "experience",
@@ -735,7 +735,7 @@ export const TIMELINE: TimelineStop[] = [
   {
     kind: "education",
     start: "2021-08",
-    period: "2021 — 2024",
+    period: "2021 — 2025",
     title: "Bachelor (Sarjana), Accounting",
     place: "Universitas Negeri Malang",
     detail: "GPA 3.9/4.0",
@@ -758,14 +758,13 @@ export const TIMELINE: TimelineStop[] = [
 /* ------------------------------------------------------------------ achievements (business first) */
 export const ACHIEVEMENTS: Achievement[] = [
   { label: "Custom ERP", caption: "Developed and implemented for construction clients", detail: "Core modules live · optimisation ongoing", display: "ERP", icon: "nodes" },
-  { label: "Clients", caption: "Client portfolio as Senior Associate", detail: "Monthly bookkeeping and financial reporting", value: 20, suffix: "+", icon: "people" },
-  { label: "Transactions / month", caption: "Reconciled in the current portfolio", detail: "Bank, cash, receivables and payables", value: 5000, suffix: "+", icon: "match" },
-  { label: "Bank transactions / month", caption: "Reconciled as Accountant & Financial Consultant", detail: "January 2025 — June 2026", value: 3000, suffix: "+", icon: "match" },
+  { label: "Clients", caption: "Multi-entity clients handled", detail: "Accounting, tax and reconciliation work", value: 20, suffix: "+", icon: "people" },
+  { label: "Transactions", caption: "Checked and processed in total", detail: "Bank, cash, receivables and payables across those clients", value: 5000, suffix: "+", icon: "match" },
   { label: "Full reporting", caption: "Statements through to the notes", detail: "Amazon sellers · Singapore reporting framework", display: "Notes", icon: "book" },
   { label: "Jurisdictions", caption: "Indonesia and Singapore reporting", detail: "CoreTax filings · IRAS report preparation", value: 2, icon: "globe" },
   { label: "Weekly periods", caption: "Attendance mapping repaired", detail: "Payroll and project-cost workbook", value: 19, icon: "calendar" },
   { label: "MSMEs", caption: "Financial statements prepared", detail: "Kantor Konsultan Pajak Tjarmadi & Rekan", value: 10, suffix: "+", icon: "report" },
-  { label: "GPA", caption: "Bachelor of Accounting", detail: "Universitas Negeri Malang", value: 3.9, decimals: 1, suffix: "/4", icon: "cap" },
+  { label: "GPA", caption: "Bachelor of Accounting", detail: "Universitas Negeri Malang, 2021 — 2025", value: 3.9, decimals: 1, suffix: "/4", icon: "cap" },
   { label: "First places", caption: "Accounting and business competitions", detail: "2021 — 2024 · see Credentials", value: 5, suffix: "×", icon: "trophy" },
   { label: "Scholarship", caption: "CA Scholarship Awardee", detail: "Ikatan Akuntan Indonesia, 2024", display: "CA", icon: "medal" },
 ];

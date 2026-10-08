@@ -77,6 +77,10 @@ drawer shows "Work samples will be added here."
 Until these are set, the site works normally, the public briefcase shows its empty state and the owner page explains
 what is missing.
 
+### Samples shipped with the site
+Confirmed anonymised samples can also live in `public/briefcase/` and be listed in `src/lib/briefcase/static.ts`
+(always published; shown first in the drawer). Spreadsheets get a readable PDF rendering and a preview image.
+
 ### Adding files sent to the agent
 Files dropped into a chat with an assistant are **not** on the website automatically. They are added through the same
 storage path as private drafts with `scripts/briefcase-add.mjs` (needs the two Supabase variables), then reviewed and

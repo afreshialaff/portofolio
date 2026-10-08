@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CASES } from "@/lib/data";
 import { formatBytes, type PublicItem } from "@/lib/briefcase/config";
+import { STATIC_ITEMS, type StaticItem } from "@/lib/briefcase/static";
 import { lockScroll, scrollToCase } from "@/lib/scroll";
 import { BriefcaseIcon } from "./BriefcaseIcon";
 import { OPEN_EVENT } from "./BriefcaseButton";
@@ -54,13 +55,14 @@ const css = `
 `;
 
 type Load = "idle" | "loading" | "ready" | "error";
+type Item = PublicItem & Partial<Pick<StaticItem, "href" | "preview" | "pdf">>;
 
 const EXT: Record<string, string> = { spreadsheet: "XLSX / CSV", document: "DOCX", pdf: "PDF" };
 
 export default function BriefcaseDrawer() {
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<Load>("idle");
-  const [items, setItems] = useState<PublicItem[]>([]);
+  const [items, setItems] = useState<Item[]>(STATIC_ITEMS);
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -72,11 +74,11 @@ export default function BriefcaseDrawer() {
       const res = await fetch("/api/briefcase/items", { cache: "no-store" });
       if (!res.ok) throw new Error(String(res.status));
       const data = (await res.json()) as { items: PublicItem[] };
-      setItems(Array.isArray(data.items) ? data.items : []);
+      setItems([...STATIC_ITEMS, ...(Array.isArray(data.items) ? data.items : [])]);
       setState("ready");
     } catch {
       // No backend reachable (e.g. not configured) — show the tidy empty state, never an error wall.
-      setItems([]);
+      setItems(STATIC_ITEMS);
       setState("ready");
     }
   }, []);
@@ -191,13 +193,16 @@ export default function BriefcaseDrawer() {
           {shown.length > 0 && (
             <ul className="bc-grid">
               {shown.map((it) => {
-                const file = `/api/briefcase/file/${it.id}`;
+                const file = it.href ?? `/api/briefcase/file/${it.id}`;
                 const related = it.case_id ? CASES.find((c) => c.id === it.case_id) : undefined;
                 return (
                   <li key={it.id}>
                     <article className="bc-card">
                       <div className="bc-prev">
-                        {it.file_kind === "image" ? (
+                        {it.preview ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={it.preview} alt={`Preview of ${it.title} — ${it.label}`} loading="lazy" decoding="async" />
+                        ) : it.file_kind === "image" ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={file} alt={`${it.title} — ${it.label}`} loading="lazy" decoding="async" />
                         ) : it.file_kind === "video" ? (
@@ -230,7 +235,16 @@ export default function BriefcaseDrawer() {
                           )}
                         </dl>
                         <div className="bc-act">
-                          {it.file_kind === "spreadsheet" || it.file_kind === "document" ? (
+                          {it.pdf && (
+                            <a className="btn btn-primary" href={it.pdf} target="_blank" rel="noopener noreferrer">
+                              View statements (PDF) <span className="arr" aria-hidden="true">↗</span>
+                            </a>
+                          )}
+                          {it.href && (it.file_kind === "spreadsheet" || it.file_kind === "document") ? (
+                            <a className={`btn ${it.pdf ? "btn-ghost" : "btn-primary"}`} href={it.href} download>
+                              Download {it.file_name.split(".").pop()?.toUpperCase()} · {formatBytes(it.file_size)}
+                            </a>
+                          ) : it.file_kind === "spreadsheet" || it.file_kind === "document" ? (
                             <a className="btn btn-primary" href={`${file}?download=1`}>
                               Download {it.file_name.split(".").pop()?.toUpperCase()}
                             </a>
