@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CASES, PROFILE } from "@/lib/data";
 import {
@@ -259,9 +260,9 @@ export default function BriefcaseAdmin() {
           </div>
         </div>
         <nav aria-label="Owner">
-          <a className="btn btn-ghost sm" href="/#cases">
+          <Link className="btn btn-ghost sm" href="/#cases">
             View public site
-          </a>
+          </Link>
           {session.owner && (
             <button type="button" className="btn btn-ghost sm" onClick={logout}>
               Log out
